@@ -1,0 +1,97 @@
+<?php
+
+namespace App\Controllers\MainController;
+
+require_once "../../vendor/autoload.php";
+use App\Models\User;
+use App\Models\UserView;
+
+if (isset($_POST['action'])) {
+    $action = $_POST['action'];
+
+    switch ($action) {
+
+        case 'addUser':
+            $firstName = $_POST['firstName'];
+            $lastName = $_POST['lastName'];
+            $status = $_POST['status'];
+            $role = $_POST['role'];
+
+            $stmt = new User();
+            $result = $stmt->addUser($firstName, $lastName, $status, $role);
+            // Перевірка успішного додавання користувача
+            if ($result) {
+                echo json_encode(['status' => true, 'message' => 'User added successfully']);
+            } else {
+                echo json_encode(['status' => false, 'message' => 'Failed to add user']);
+            }
+            break;
+        case 'deleteUser':
+            $userId = $_POST['userId'];
+            $userModel = new User();
+            $result = $userModel->deleteUser($userId);
+
+            header('Content-Type: application/json');
+            // Перевірка успішного видалення користувача
+            if ($result) {
+                echo json_encode(['status' => true, 'message' => 'User deleted successfully']);
+            } else {
+                echo json_encode(['status' => false, 'message' => 'Failed to delete user']);
+            }
+            break;
+        case 'editUser':
+
+            $userId = $_POST['userId'];
+            $firstName = $_POST['firstName'];
+            $lastName = $_POST['lastName'];
+            $status = $_POST['status'];
+            $role = $_POST['role'];
+
+            $userModel = new User();
+            $result = $userModel->updateUser($userId, $firstName, $lastName, $status, $role);
+            header('Content-Type: application/json');
+            if ($result) {
+                echo json_encode(['status' => true, 'message' => 'User edit successfully']);
+            } else {
+                echo json_encode(['status' => false, 'message' => 'Failed to edit user']);
+            }
+            break;
+
+        case 'actionWithSelectedUsers':
+
+
+            $userIds = $_POST['userIds'];
+            $actionSelected = $_POST['actionSelected'];
+
+
+            $userModel = new User();
+            if ($actionSelected != 'delete') {
+                foreach ($userIds as $id){
+                    $result = $userModel->updateStatusUsersById($id, $actionSelected);
+                }
+
+            } else {
+                foreach ($userIds as $id){
+                    $result = $userModel->deleteUser($id);
+                }
+
+            }
+
+            if ($result) {
+                echo json_encode(['status' => true, 'message' => 'Users edit successfully']);
+            } else {
+                echo json_encode(['status' => false, 'message' => 'Failed to edit users']);
+            }
+            break;
+
+
+        case 'live_contend':
+
+            $userModel = new UserView();
+            $userModel->userView($userModel->getUsers());
+
+    }
+} else {
+    echo json_encode(['status' => false, 'message' => 'No action specified']);
+}
+
