@@ -53,21 +53,21 @@ $(document).on('click', ".selectUser", function(){
 
 // Обробник події клікання на кнопку додавання користувача (два випадки)
 $("#buttonAdd1, #buttonAdd2").click(function(){
-    let buttonId = $(this).data('button-id');
+    let buttonId = 1;
     const userModal = document.getElementById('userModal');
     const modalTitle = userModal.querySelector('.modal-title');
     modalTitle.textContent = "Add";
-    $("#userModal").data('button-id', buttonId).modal('show');
+    $(userModal).data('button-id', buttonId).data('id', null).modal('show');
 });
 
 // Обробник події клікання на кнопку редагування користувача
 $(document).on('click', ".editBtn", function() {
-    let buttonId = $(this).data('button-id');
+    let buttonId = 2;
     let userId = $(this).data('id');
     const userModal = document.getElementById('userModal');
     const modalTitle = userModal.querySelector('.modal-title');
     modalTitle.textContent = "Update";
-    $("#userModal").data('button-id', buttonId).data('id', userId).modal('show');
+    $(userModal).data('button-id', buttonId).data('id', userId).modal('show');
 });
 
 // Обробник події відправки форми для додавання/редагування користувача
@@ -77,24 +77,29 @@ $(document).on('submit', "#userModal", function(event){
     let firstName = $('#firstName').val();
     let lastName = $('#lastName').val();
     let role = $('#role').val();
-    let status = $('#status').prop('checked') ? 1 : 0;
+    let status = $('#status').is(':checked') ? 1 : 0;
     let buttonId = $(this).data('button-id');
     let userId = $(this).data('id');
 
-    let action = (buttonId == "1") ? "addUser" : "editUser";
+    let action = (buttonId === 1) ? "addUser" : "editUser";
+    let requestData = {
+        action: action,
+        firstName: firstName,
+        lastName: lastName,
+        status: status,
+        role: role
+    };
+
+    // Додаємо userId до requestData, якщо buttonId !== 1
+    if (buttonId !== 1) {
+        requestData.userId = userId;
+    }
 
     $.ajax({
         url: 'src/Controllers/MainController.php',
         method: 'POST',
         dataType: 'json',
-        data: {
-            action: action,
-            userId: (buttonId == "1") ? null : userId,
-            firstName: firstName,
-            lastName: lastName,
-            status: status,
-            role: role
-        },
+        data: requestData,
         success: function (response) {
             alert(response.message);
             $("#userModal").modal('hide');
@@ -106,7 +111,6 @@ $(document).on('submit', "#userModal", function(event){
         }
     });
 });
-
 // Функція для очищення полів форми
 function clearFormFields() {
     $('#firstName').val('');

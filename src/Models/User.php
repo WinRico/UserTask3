@@ -42,10 +42,6 @@ class User {
      * @return string JSON-рядок з результатом операції.
      */
     public function addUser($firstName, $lastName, $status, $role) {
-        // Перевірка на обов'язкові поля
-        if (empty($firstName) || empty($lastName)) {
-            return json_encode(['status' => false, 'error' => ['code' => 101, 'message' => 'missing required fields']]);
-        }
 
         // Конвертація статусу в рядок
         $status = ($status == 1) ? 'Active' : 'No Active';
@@ -57,13 +53,13 @@ class User {
         $stmt = $this->db->prepare($query);
         $stmt->execute([$firstName, $lastName, $status, $role]);
 
+        $userId = $this->db->lastInsertId();
+
         // Повернення результату операції у форматі JSON
-        return json_encode(['status' => true, 'error' => null, 'id' => $query]);
+        return json_encode(['status' => true, 'error' => null, 'id' => $userId]);
     }
     function updateUser($id, $firstname, $lastname, $status, $role){
-        if (empty($firstname) || empty($lastname)) {
-            return json_encode(['status' => false, 'error' => ['code' => 101, 'message' => 'missing required fields']]);
-        }
+
         $status = ($status == 1) ? 'Active' : 'No Active';
         $updatedUser = $this->updateUserById($id, $firstname, $lastname, $status, $role);
         if (!$updatedUser) {
@@ -97,9 +93,7 @@ class User {
      * @return string JSON-рядок з результатом операції.
      */
     function updateStatusUsersById($userIds,$action){
-        if (empty($userIds)){
-            return json_encode(['status' => false, 'error' => ['code' => 101, 'message' => 'missing required fields']]);
-        }
+
         $status = $action === 'setActive' ? 'Active' : 'No Active';
         $query = "UPDATE users SET status = ? WHERE id = ?";
         $stmt = $this->db->prepare($query);
