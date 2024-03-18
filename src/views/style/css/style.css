@@ -135,3 +135,10 @@ body {
 .cl-switch > input:checked:disabled + span::after {
     background-color: #75C5FAFF;
 }
+.status-indicator {
+    color: #86c541;
+    text-align: center;
+}
+.status-indicator.offline {
+    color: #5d5d5d;
+}

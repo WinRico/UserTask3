@@ -45,9 +45,9 @@ class UserView extends User
 
             // Перевірка статусу користувача та встановлення відповідного кольору
             if ($user['status'] != "Active") {
-                $output .= '<td style="color: #b42323;text-align: center"><span class="statusIndicator active"></span><i class="fa fa-circle"></i></td>';
+                $output .= '<td class="status-indicator offline"><i class="fa fa-circle"></i></td>';
             } else {
-                $output .= '<td style="color: #86c541;text-align: center"><span class="statusIndicator active"></span><i class="fa fa-circle"></i></td>';
+                $output .= '<td class="status-indicator"><i class="fa fa-circle"></i></td>';
             }
 
             // Додавання ролі користувача
@@ -55,7 +55,7 @@ class UserView extends User
                     <td>'. $user['role'] .'</td>
                     <td>
                     <div class="btn-group">
-                     <button type="button" data-button-id="2" class="btn btn-sm btn-outline-secondary editBtn" data-id="'. $user['id'] .'">Edit</button>
+                     <button type="button" data-button-id="2" class="btn btn-sm btn-outline-secondary editBtn" data-id="'. $user['id'] .'"><i data-feather="edit"></i></button>
                      <button type="button" class="btn btn-sm btn-outline-secondary deleteBtn" data-id="'. $user['id'] .'"><i data-feather="trash-2"></i></button>
                     </div>
                     </td>
