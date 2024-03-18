@@ -13,7 +13,7 @@ if (isset($_POST['action'])) {
 
         case 'addUser':
             if (! empty(trim($_POST['firstName'])) && ! empty(trim($_POST['lastName'])) && ! empty(trim($_POST['role']))) {
-                if (! is_numeric($_POST['firstName']) || ! is_numeric($_POST['lastName'])) {
+                if (! is_numeric($_POST['firstName']) && ! is_numeric($_POST['lastName'])) {
                     $firstName = $_POST['firstName'];
                     $lastName = $_POST['lastName'];
                     $status = $_POST['status'];
@@ -52,7 +52,7 @@ if (isset($_POST['action'])) {
             break;
         case 'editUser':
             if (! empty($_POST['userId']) && ! empty($_POST['firstName']) && ! empty($_POST['lastName']) && ! empty($_POST['role'])) {
-                if (! is_numeric($_POST['firstName']) || ! is_numeric($_POST['lastName'])) {
+                if (!is_numeric($_POST['firstName']) && !is_numeric($_POST['lastName'])) {
                     $userId = $_POST['userId'];
                     $firstName = $_POST['firstName'];
                     $lastName = $_POST['lastName'];
