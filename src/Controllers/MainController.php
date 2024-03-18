@@ -27,7 +27,7 @@ if (isset($_POST['action'])) {
                     } else {
                         echo json_encode(['status' => false, 'message' => 'Failed to add user']);
                     }
-                }else{
+                } else {
                     echo json_encode(['status' => false, 'message' => 'First name and last name cannot be a numeric. ']);
                 }
             } else {
@@ -52,19 +52,23 @@ if (isset($_POST['action'])) {
             break;
         case 'editUser':
             if (! empty($_POST['userId']) && ! empty($_POST['firstName']) && ! empty($_POST['lastName']) && ! empty($_POST['role'])) {
-                $userId = $_POST['userId'];
-                $firstName = $_POST['firstName'];
-                $lastName = $_POST['lastName'];
-                $status = $_POST['status'];
-                $role = $_POST['role'];
+                if (! is_numeric($_POST['firstName']) || ! is_numeric($_POST['lastName'])) {
+                    $userId = $_POST['userId'];
+                    $firstName = $_POST['firstName'];
+                    $lastName = $_POST['lastName'];
+                    $status = $_POST['status'];
+                    $role = $_POST['role'];
 
-                $userModel = new User();
-                $result = $userModel->updateUser($userId, $firstName, $lastName, $status, $role);
-                header('Content-Type: application/json');
-                if ($result) {
-                    echo json_encode(['status' => true, 'message' => 'User edit successfully']);
+                    $userModel = new User();
+                    $result = $userModel->updateUser($userId, $firstName, $lastName, $status, $role);
+                    header('Content-Type: application/json');
+                    if ($result) {
+                        echo json_encode(['status' => true, 'message' => 'User edit successfully']);
+                    } else {
+                        echo json_encode(['status' => false, 'message' => 'Failed to edit user']);
+                    }
                 } else {
-                    echo json_encode(['status' => false, 'message' => 'Failed to edit user']);
+                    echo json_encode(['status' => false, 'message' => 'First name and last name cannot be a numeric. ']);
                 }
             } else {
                 // Вивід повідомлення, якщо якесь з обов'язкових полів порожнє
