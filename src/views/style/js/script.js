@@ -36,11 +36,45 @@ function doAction(selectedUsers, action) {
         }
     });
 }
+// Функція для отримання в форму данних
+function getUserData(userId,buttonId) {
+
+    // Відправка AJAX-запиту на сервер для отримання даних про користувача за його ID
+    $.ajax({
+        url: 'src/Controllers/MainController.php', // URL-адреса маршруту, що повертає дані про користувача
+        type: 'POST',
+        data: {action: "getUserById",
+                    user_id: userId},
+        success: function(response) {
+            // Заповнення отриманими даними полів форми редагування користувача
+            var userData = JSON.parse(response);
+            console.log(userData[0].status);
+            $('#firstName').val(userData[0].firstname);
+            $('#lastName').val(userData[0].lastname);
+            if (userData[0].status === 'No active'){
+                $('#status').prop('checked', false);
+            }
+            else {
+                $('#status').prop('checked', true);
+            }
+            $('#role').val(userData[0].role);
+
+            // Відображення модального вікна редагування користувача
+            $(userModal).data('button-id', buttonId).data('id', userId).modal('show');
+        },
+        error: function(xhr, status, error) {
+            // Обробка помилки, якщо щось пішло не так при отриманні даних
+            console.error(error);
+            alert('An error occurred while fetching user data.');
+        }
+    });
+}
 
 // Обробник події клікання на кнопку вибору всіх користувачів
 $(document).on('click', "#selectAll", function(){
     $(".selectUser").prop('checked', $(this).prop('checked'));
 });
+
 
 // Обробник події клікання на окремого користувача для вибору
 $(document).on('click', ".selectUser", function(){
@@ -51,12 +85,14 @@ $(document).on('click', ".selectUser", function(){
     }
 });
 
+
 // Обробник події клікання на кнопку додавання користувача (два випадки)
 $("#buttonAdd1, #buttonAdd2").click(function(){
     let buttonId = 1;
     const userModal = document.getElementById('userModal');
     const modalTitle = userModal.querySelector('.modal-title');
     modalTitle.textContent = "Add";
+    clearFormFields();
     $(userModal).data('button-id', buttonId).data('id', null).modal('show');
 });
 
@@ -67,7 +103,7 @@ $(document).on('click', ".editBtn", function() {
     const userModal = document.getElementById('userModal');
     const modalTitle = userModal.querySelector('.modal-title');
     modalTitle.textContent = "Update";
-    $(userModal).data('button-id', buttonId).data('id', userId).modal('show');
+    getUserData(userId,buttonId);
 });
 
 // Обробник події відправки форми для додавання/редагування користувача
@@ -101,10 +137,17 @@ $(document).on('submit', "#userModal", function(event){
         dataType: 'json',
         data: requestData,
         success: function (response) {
-            alert(response.message);
-            $("#userModal").modal('hide');
-            loadContent();
-            clearFormFields();
+            if (response.status) {
+                // Все пройшло успішно
+                alert(response.message);
+                $("#userModal").modal('hide');
+                loadContent();
+                clearFormFields();
+            } else {
+                // Виникла помилка
+                alert(response.message);
+            }
+
         },
         error: function (xhr, status, error) {
             console.error('AJAX Error:', error);
@@ -172,9 +215,17 @@ $(".buttonOk").click(function(){
         let userId = $(this).data('id');
         selectedUsers.push(userId);
     });
-
+    console.log(action);
     // Виклик функції для виконання дії
-    doAction(selectedUsers, action);
+    if(action === 'delete'){
+        if (confirm("Are you sure you want to delete this user?")) {
+            doAction(selectedUsers, action);
+        }
+    }else {
+        doAction(selectedUsers, action);
+    }
+
+
 });
 
 // Обробник події клікання на кнопку закриття модального вікна

@@ -31,6 +31,12 @@ class User {
         // Повернення результату у вигляді асоціативного масиву
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function getUsersById($id) {
+        $statement = $this->db->prepare("SELECT * FROM users WHERE id = ?");
+        $statement->execute([$id]);
+        // Повернення результату у вигляді асоціативного масиву
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
 
     /**
      * Додати нового користувача до бази даних.
