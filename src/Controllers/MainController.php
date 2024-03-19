@@ -36,16 +36,6 @@ if (isset($_POST['action'])) {
             }
             break;
 
-        case 'deleteUser':
-            if (! empty($_POST['userId'])) {
-                $userId = $_POST['userId'];
-                $userModel = new User();
-                $result = $userModel->deleteUser($userId);
-                header('Content-Type: application/json');
-                // Перевірка успішного видалення користувача
-
-            }
-            break;
         case 'editUser':
             if (! empty($_POST['userId']) && ! empty($_POST['firstName']) && ! empty($_POST['lastName']) && ! empty($_POST['role'])) {
                 if (! is_numeric($_POST['firstName']) && ! is_numeric($_POST['lastName'])) {

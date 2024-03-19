@@ -2,9 +2,9 @@
 function loadContent() {
     $.ajax({
         url: 'src/Controllers/MainController.php',
-        method: "post",
+        method: 'post',
         data:{
-            action: "live_content"
+            action: 'live_content'
         },
         success: function (data) {
             $('#live_content').html(data);
@@ -15,17 +15,17 @@ loadContent();
 
 
 // Обробник події клікання на кнопку вибору всіх користувачів
-$(document).on('click', "#selectAll", function(){
-    $(".selectUser").prop('checked', $(this).prop('checked'));
+$(document).on('click', '#selectAll', function(){
+    $('.selectUser').prop('checked', $(this).prop('checked'));
 });
 
 
 // Обробник події клікання на окремого користувача для вибору
-$(document).on('click', ".selectUser", function(){
-    if($(".selectUser:checked").length === $(".selectUser").length) {
-        $("#selectAll").prop('checked', true);
+$(document).on('click', '.selectUser', function(){
+    if($('.selectUser:checked').length === $('.selectUser').length) {
+        $('#selectAll').prop('checked', true);
     } else {
-        $("#selectAll").prop('checked', false);
+        $('#selectAll').prop('checked', false);
     }
 });
 
@@ -38,7 +38,7 @@ function doAction(selectedUsers, action) {
         method: 'POST',
         dataType: 'json',
         data: {
-            action: "actionWithSelectedUsers",
+            action: 'actionWithSelectedUsers',
             userIds: selectedUsers,
             actionSelected: action,
         },
@@ -62,12 +62,12 @@ function editUserData(userId,buttonId) {
         url: 'src/Controllers/MainController.php', // URL-адреса маршруту, що повертає дані про користувача
         type: 'POST',
         data: {
-            action: "getUserById",
+            action: 'getUserById',
             user_id: userId
         },
         success: function(response) {
             // Заповнення отриманими даними полів форми редагування користувача
-            var userData = JSON.parse(response);
+            const userData = JSON.parse(response);
             $('#firstName').val(userData[0].firstname);
             $('#lastName').val(userData[0].lastname);
             if (userData[0].status === 'No active'){
@@ -93,7 +93,7 @@ function deleteFormField(userId) {
         url: 'src/Controllers/MainController.php',
         type: 'POST',
         data: {
-            action: "getUserById",
+            action: 'getUserById',
             user_id: userId
         },
         success: function(response) {
@@ -102,9 +102,9 @@ function deleteFormField(userId) {
             const modalTitle = confirmModal.querySelector('.modal-title');
             const modalBody = confirmModal.querySelector('.modal-body');
             const modalAction = confirmModal.querySelector('.btn-danger');
-            modalTitle.textContent = "Delete Confirmation";
-            modalBody.textContent = "Are you sure you want to delete " + userData[0].firstname + " " + userData[0].lastname + "?"; // Встановлюємо ім'я користувача у модальному вікні
-            modalAction.textContent = "Delete";
+            modalTitle.textContent = 'Delete Confirmation';
+            modalBody.textContent = 'Are you sure you want to delete ' + userData[0].firstname + ' ' + userData[0].lastname + '?'; // Встановлюємо ім'я користувача у модальному вікні
+            modalAction.textContent = 'Delete';
             $('#confirmModal').modal('show');
         },
         error: function(xhr, status, error) {
@@ -120,27 +120,27 @@ function deleteFormField(userId) {
 }
 
 // Обробник події клікання на кнопку додавання користувача (два випадки)
-$("#buttonAdd1, #buttonAdd2").click(function(){
+$('#buttonAdd1, #buttonAdd2').click(function(){
     let buttonId = 1;
     const userModal = document.getElementById('userModal');
     const modalTitle = userModal.querySelector('.modal-title');
-    modalTitle.textContent = "Add";
+    modalTitle.textContent = 'Add';
     clearFormFields();
     $(userModal).data('button-id', buttonId).data('id', null).modal('show');
 });
 
 // Обробник події клікання на кнопку редагування користувача
-$(document).on('click', ".editBtn", function() {
+$(document).on('click', '.editBtn', function() {
     let buttonId = 2;
     let userId = $(this).data('id');
     const userModal = document.getElementById('userModal');
     const modalTitle = userModal.querySelector('.modal-title');
-    modalTitle.textContent = "Update";
+    modalTitle.textContent = 'Update';
     editUserData(userId,buttonId);
 });
 
 // Обробник події відправки форми для додавання/редагування користувача
-$(document).on('submit', "#userModal", function(event){
+$(document).on('submit', '#userModal', function(event){
     event.preventDefault();
 
     let firstName = $('#firstName').val();
@@ -149,8 +149,7 @@ $(document).on('submit', "#userModal", function(event){
     let status = $('#status').is(':checked') ? 1 : 0;
     let buttonId = $(this).data('button-id');
     let userId = $(this).data('id');
-
-    let action = (buttonId === 1) ? "addUser" : "editUser";
+    let action = (buttonId === 1) ? 'addUser' : 'editUser';
     let requestData = {
         action: action,
         firstName: firstName,
@@ -172,7 +171,7 @@ $(document).on('submit', "#userModal", function(event){
         success: function (response) {
             if (response.status) {
                 console.log(response.message);
-                $("#userModal").modal('hide');
+                $('#userModal').modal('hide');
                 loadContent();
                 clearFormFields();
             } else {
@@ -188,13 +187,13 @@ $(document).on('submit', "#userModal", function(event){
 });
 
 // Обробник події клікання на кнопку видалення користувача
-$(document).on('click', ".deleteBtn", function() {
+$(document).on('click', '.deleteBtn', function() {
     const userId = $(this).data('id');
     deleteFormField(userId);
 });
 
 // Обробник події клікання на кнопку збереження вибраних дій з користувачами
-$(".buttonOk").click(function(){
+$('.buttonOk').click(function(){
     // Отримання значення action з вибраного елемента <select>
     let actionSelect = $(this).data('select');
     let action = $(actionSelect).val();
@@ -203,8 +202,8 @@ $(".buttonOk").click(function(){
     const modalBody = massageModal.querySelector('.modal-body');
 
     // Перевірка, чи обрано дію
-    if(action === "") {
-        modalBody.textContent = "Please select an action.";
+    if(action === '') {
+        modalBody.textContent = 'Please select an action.';
         $('#massageModel').modal('show');
         $('#confirmMassageBtn').click(function () {
             $('#massageModel').modal('hide');
@@ -213,8 +212,8 @@ $(".buttonOk").click(function(){
     }
 
     // Перевірка, чи обрано хоча б одного користувача
-    if($(".selectUser:checked").length === 0) {
-        modalBody.textContent = "Please select at least one user.";
+    if($('.selectUser:checked').length === 0) {
+        modalBody.textContent = 'Please select at least one user.';
         $('#massageModel').modal('show');
         $('#confirmMassageBtn').click(function () {
             $('#massageModel').modal('hide');
@@ -225,7 +224,7 @@ $(".buttonOk").click(function(){
     let selectedUsers = [];
 
     // Збір ID обраних користувачів
-    $(".selectUser:checked").each(function() {
+    $('.selectUser:checked').each(function() {
         let userId = $(this).data('id');
         selectedUsers.push(userId);
     });
@@ -236,9 +235,9 @@ $(".buttonOk").click(function(){
             const modalTitle = confirmModal.querySelector('.modal-title');
             const modalBody = confirmModal.querySelector('.modal-body');
             const modalAction = confirmModal.querySelector('.btn-danger');
-            modalTitle.textContent = "Delete Confirmation";
-            modalBody.textContent = "Are you sure you want to delete this users?"; // Встановлюємо ім'я користувача у модальному вікні
-            modalAction.textContent = "Delete";
+            modalTitle.textContent = 'Delete Confirmation';
+            modalBody.textContent = 'Are you sure you want to delete this users?'; // Встановлюємо ім'я користувача у модальному вікні
+            modalAction.textContent = 'Delete';
             $('#confirmModal').modal('show'); // Показуємо модальне вікно підтвердження
             // Обробник клікання на кнопку підтвердження видалення
             $('#confirmBtn').click(function () {
@@ -255,6 +254,7 @@ $(".buttonOk").click(function(){
 
 
 });
+
 // Функція для очищення полів форми
 function clearFormFields() {
     $('#firstName').val('');

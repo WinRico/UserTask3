@@ -3,7 +3,7 @@
         'name' => '__root__',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'de3b094eee503e1149ab924367441866113184f9',
+        'reference' => 'c42141f58584feed1c3312644bfa65fc047e294a',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         '__root__' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'de3b094eee503e1149ab924367441866113184f9',
+            'reference' => 'c42141f58584feed1c3312644bfa65fc047e294a',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -27,6 +27,15 @@
             'install_path' => __DIR__ . '/../laravel/pint',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'phpcheckstyle/phpcheckstyle' => array(
+            'pretty_version' => 'V0.14.8',
+            'version' => '0.14.8.0',
+            'reference' => '86fbbac419468c52d000fe0e0743c555fac8a42a',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpcheckstyle/phpcheckstyle',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'symfony/polyfill-mbstring' => array(
             'pretty_version' => 'v1.29.0',
