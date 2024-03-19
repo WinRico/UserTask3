@@ -43,16 +43,12 @@ if (isset($_POST['action'])) {
                 $result = $userModel->deleteUser($userId);
                 header('Content-Type: application/json');
                 // Перевірка успішного видалення користувача
-                if ($result) {
-                    echo json_encode(['status' => true, 'message' => 'User deleted successfully']);
-                } else {
-                    echo json_encode(['status' => false, 'message' => 'Failed to delete user']);
-                }
+
             }
             break;
         case 'editUser':
             if (! empty($_POST['userId']) && ! empty($_POST['firstName']) && ! empty($_POST['lastName']) && ! empty($_POST['role'])) {
-                if (!is_numeric($_POST['firstName']) && !is_numeric($_POST['lastName'])) {
+                if (! is_numeric($_POST['firstName']) && ! is_numeric($_POST['lastName'])) {
                     $userId = $_POST['userId'];
                     $firstName = $_POST['firstName'];
                     $lastName = $_POST['lastName'];
@@ -86,24 +82,34 @@ if (isset($_POST['action'])) {
                     foreach ($userIds as $id) {
                         $result = $userModel->updateStatusUsersById($id, $actionSelected);
                     }
+                    if ($result) {
+                        echo json_encode(['status' => true, 'message' => 'Users edit successfully']);
+                    } else {
+                        echo json_encode(['status' => false, 'message' => 'Failed to edit users']);
+                    }
                 } else {
-                    foreach ($userIds as $id) {
-                        $result = $userModel->deleteUser($id);
+                    if (!is_string($userIds)) {
+                        foreach ($userIds as $id) {
+                            $result = $userModel->deleteUser($id);
+                        }
+                    }
+                    else {
+                        $result = $userModel->deleteUser($userIds);
+                    }
+                    if ($result) {
+                        echo json_encode(['status' => true, 'message' => 'User deleted successfully']);
+                    } else {
+                        echo json_encode(['status' => false, 'message' => 'Failed to delete user']);
                     }
                 }
 
-                if ($result) {
-                    echo json_encode(['status' => true, 'message' => 'Users edit successfully']);
-                } else {
-                    echo json_encode(['status' => false, 'message' => 'Failed to edit users']);
-                }
             } else {
                 // Вивід повідомлення, якщо якесь з обов'язкових полів порожнє
                 echo json_encode(['status' => false, 'message' => 'All fields are required']);
             }
             break;
 
-        case 'live_contend':
+        case 'live_content':
 
             $userModel = new UserView();
             $userModel->userView($userModel->getUsers());

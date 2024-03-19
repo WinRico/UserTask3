@@ -21,7 +21,7 @@
                 <button type="button" id="buttonAdd1" data-button-id="1" class="btn btn-primary">Add</button>
                 <form>
                     <select class="form-select actionSelect" id="actionSelect1">
-                        <option value="">Please Select</option>
+                        <option value="">-Please Select-</option>
                         <option value="setActive">Set Active</option>
                         <option value="setNotActive">Set Not Active</option>
                         <option value="delete">Delete</option>
@@ -33,7 +33,7 @@
     </div>
     <div class="row">
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-            <div id="live_contend">
+            <div id="live_content">
             </div>
         </main>
     </div>
@@ -43,7 +43,7 @@
                 <button type="button" id="buttonAdd2" data-button-id="1" class="btn btn-primary">Add</button>
                 <form>
                     <select class="form-select actionSelect" id="actionSelect2">
-                        <option value="">Please Select</option>
+                        <option value="">-Please Select-</option>
                         <option value="setActive">Set Active</option>
                         <option value="setNotActive">Set Not Active</option>
                         <option value="delete">Delete</option>
@@ -65,6 +65,7 @@
                 <!-- Modal Body -->
                 <div class="modal-body">
                     <form id="userForm">
+                        <div id="error-message" class="alert alert-danger" style="display: none;"></div>
                         <div class="form-group">
                             <label for="firstName">First Name:</label>
                             <input type="text" class="form-control" id="firstName" name="firstName">
@@ -91,6 +92,37 @@
                         </div>
                         <button type="submit" class="btn btn-primary" style="margin-top: 5px">Submit</button>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal delete confirm -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <h4 class="modal-body"></h4>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmBtn"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal massages -->
+    <div class="modal fade" id="massageModel" tabindex="-1" aria-labelledby="massageModelLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="massageModelLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <h4 class="modal-body"></h4>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="confirmMassageBtn">Ok</button>
                 </div>
             </div>
         </div>
