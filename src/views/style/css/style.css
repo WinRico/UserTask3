@@ -136,9 +136,11 @@ body {
     background-color: #75C5FAFF;
 }
 .status-indicator {
-    color: #86c541;
     text-align: center;
 }
-.status-indicator.offline {
+.online{
+    color: #86c541;
+}
+.offline {
     color: #5d5d5d;
 }

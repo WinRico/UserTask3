@@ -1,5 +1,6 @@
+fetchData();
 // Функція для завантаження вмісту
-function loadContent() {
+function fetchData() {
     $.ajax({
         url: 'src/Controllers/MainController.php',
         method: 'post',
@@ -11,7 +12,7 @@ function loadContent() {
         }
     });
 }
-loadContent();
+
 
 
 // Обробник події клікання на кнопку вибору всіх користувачів
@@ -30,6 +31,19 @@ $(document).on('click', '.selectUser', function(){
 });
 
 
+
+// Функція для оновлення статусу користувача в таблиці
+function updateStatus(userId, status) {
+    const statusElement = $('#status' + userId); // Знаходимо елемент статусу за його ID
+    if (status === "setActive") {
+        statusElement.removeClass('offline').addClass('online');
+    } else {
+        statusElement.removeClass('online').addClass('offline');
+    }
+}
+
+
+
 // Функція для виконання дії з вибраними користувачами
 function doAction(selectedUsers, action) {
 
@@ -44,8 +58,10 @@ function doAction(selectedUsers, action) {
         },
         success: function (response) {
             if (response.status) {
+                selectedUsers.forEach(function(userId) {
+                    updateStatus(userId,action);
+                });
                 console.log(response.message);
-                loadContent();
             } else {
                 console.error(response.message);
             }},
@@ -54,6 +70,9 @@ function doAction(selectedUsers, action) {
         }
     });
 }
+
+
+
 // Функція для отримання в форму данних
 function editUserData(userId,buttonId) {
 
@@ -86,38 +105,84 @@ function editUserData(userId,buttonId) {
         }
     });
 }
-// функція виводу модального вікна видалення;
-function deleteFormField(userId) {
-    // AJAX-запит для отримання імені користувача
+
+// Функція для отримання в форму данних
+function deleteUser(userId) {
+
+    // Відправка AJAX-запиту на сервер для отримання даних про користувача за його ID
     $.ajax({
-        url: 'src/Controllers/MainController.php',
+        url: 'src/Controllers/MainController.php', // URL-адреса маршруту, що повертає дані про користувача
         type: 'POST',
         data: {
-            action: 'getUserById',
-            user_id: userId
+            action: 'deleteUser',
+            userId: userId
         },
         success: function(response) {
-            const userData = JSON.parse(response);
-            const confirmModal = document.getElementById('confirmModal');
-            const modalTitle = confirmModal.querySelector('.modal-title');
-            const modalBody = confirmModal.querySelector('.modal-body');
-            const modalAction = confirmModal.querySelector('.btn-danger');
-            modalTitle.textContent = 'Delete Confirmation';
-            modalBody.textContent = 'Are you sure you want to delete ' + userData[0].firstname + ' ' + userData[0].lastname + '?'; // Встановлюємо ім'я користувача у модальному вікні
-            modalAction.textContent = 'Delete';
-            $('#confirmModal').modal('show');
-        },
+            if (response.status) {
+                if (Array.isArray(userId)) {
+                    userId.forEach(function(id) {
+                        $('#userRow_' + id).remove();
+                    });
+                } else {
+                    $('#userRow_' + userId).remove();
+                }
+                console.log(response.message);
+            } else {
+                console.error(response.message);
+            }},
         error: function(xhr, status, error) {
-            console.error('Error:', error);
+            console.error(error);
         }
     });
+}
 
-    // Обробник клікання на кнопку підтвердження видалення
-    $('#confirmBtn').click(function() {
-        doAction(userId, 'delete');
+function confirmAction(action, userData) {
+    const confirmModal = document.getElementById('confirmModal');
+    const modalTitle = confirmModal.querySelector('.modal-title');
+    const modalBody = confirmModal.querySelector('.modal-body');
+    const modalAction = confirmModal.querySelector('.btn-danger');
+    console.log(userData)
+    modalTitle.textContent = 'Confirm ' + action; // Змінюємо заголовок модального вікна залежно від дії
+    modalBody.textContent = 'Are you sure you want to ' + action + ' ' + userData[0].firstname + ' ' + userData[0].lastname + '?'; // Встановлюємо текст повідомлення залежно від дії та даних про користувача
+    modalAction.textContent = action; // Встановлюємо текст кнопки підтвердження дії
+    $('#confirmModal').modal('show');
+    // Додаємо обробник клікання на кнопку підтвердження
+    $('#confirmBtn').off('click').on('click', function() {
+        if (action === 'delete') {
+            console.log(userData[0].id);
+            deleteUser(userData[0].id);
+        } else if (action === 'Edit') {
+            // Додайте код для редагування, якщо потрібно
+        }
         $('#confirmModal').modal('hide');
     });
 }
+
+
+
+// функція виводу модального вікна видалення;
+function getUserData(userId) {
+    return new Promise((resolve, reject) => {
+        // AJAX-запит для отримання даних користувача з бази даних
+        $.ajax({
+            url: 'src/Controllers/MainController.php',
+            type: 'POST',
+            data: {
+                action: 'getUserById',
+                user_id: userId
+            },
+            success: function(response) {
+                const userData = JSON.parse(response);
+                resolve(userData); // Повертаємо отримані дані через обіцянку
+            },
+            error: function(xhr, status, error) {
+                reject(error); // Повертаємо помилку через обіцянку
+            }
+        });
+    });
+}
+
+
 
 // Обробник події клікання на кнопку додавання користувача (два випадки)
 $('#buttonAdd1, #buttonAdd2').click(function(){
@@ -129,6 +194,9 @@ $('#buttonAdd1, #buttonAdd2').click(function(){
     $(userModal).data('button-id', buttonId).data('id', null).modal('show');
 });
 
+
+
+
 // Обробник події клікання на кнопку редагування користувача
 $(document).on('click', '.editBtn', function() {
     let buttonId = 2;
@@ -138,6 +206,22 @@ $(document).on('click', '.editBtn', function() {
     modalTitle.textContent = 'Update';
     editUserData(userId,buttonId);
 });
+
+
+
+// Обробник події клікання на кнопку видалення користувача
+$(document).on('click', '.deleteBtn', function() {
+    const userId = $(this).data('id');
+    getUserData(userId)
+        .then(userData =>{
+            confirmAction('delete',userData);
+        })
+        .catch(error =>{
+            console.log(error);
+        })
+});
+
+
 
 // Обробник події відправки форми для додавання/редагування користувача
 $(document).on('submit', '#userModal', function(event){
@@ -172,7 +256,6 @@ $(document).on('submit', '#userModal', function(event){
             if (response.status) {
                 console.log(response.message);
                 $('#userModal').modal('hide');
-                loadContent();
                 clearFormFields();
             } else {
                 // Виникла помилка
@@ -186,11 +269,8 @@ $(document).on('submit', '#userModal', function(event){
     });
 });
 
-// Обробник події клікання на кнопку видалення користувача
-$(document).on('click', '.deleteBtn', function() {
-    const userId = $(this).data('id');
-    deleteFormField(userId);
-});
+
+
 
 // Обробник події клікання на кнопку збереження вибраних дій з користувачами
 $('.buttonOk').click(function(){
@@ -241,19 +321,27 @@ $('.buttonOk').click(function(){
             $('#confirmModal').modal('show'); // Показуємо модальне вікно підтвердження
             // Обробник клікання на кнопку підтвердження видалення
             $('#confirmBtn').click(function () {
-                doAction(selectedUsers, action); // Викликаємо функцію для видалення користувача
+                deleteUser(selectedUsers); // Викликаємо функцію для видалення користувача
                 $('#confirmModal').modal('hide'); // Ховаємо модальне вікно підтвердження
             });
         }else {
-            deleteFormField(selectedUsers[0]);
+            const userId = $(this).data('id');
+            getUserData(userId)
+                .then(userData =>{
+                    confirmAction('delete',userData);
+                })
+                .catch(error =>{
+                    console.log(error);
+                })
         }
 
     }else {
         doAction(selectedUsers, action);
     }
 
-
 });
+
+
 
 // Функція для очищення полів форми
 function clearFormFields() {
@@ -262,6 +350,8 @@ function clearFormFields() {
     $('#role').val('');
     $('#status').prop('checked', false);
 }
+
+
 
 // Обробник події клікання на кнопку закриття модального вікна
 $(document).on('click', '.close', function() {
