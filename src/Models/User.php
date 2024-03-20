@@ -48,7 +48,6 @@ class User {
      * @return string JSON-рядок з результатом операції.
      */
     public function addUser($firstName, $lastName, $status, $role) {
-
         // Конвертація статусу в рядок
         $status = ($status == 1) ? 'Active' : 'No Active';
 

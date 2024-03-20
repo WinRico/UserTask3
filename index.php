@@ -34,7 +34,7 @@
     </div>
     <div class="row">
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-            <table class="table table-bordered">
+            <table id="userTable" class="table table-bordered">
                 <thead>
                 <tr>
                     <th><input type="checkbox" id="selectAll"></th>
@@ -72,7 +72,7 @@
                 <!-- Modal Header -->
                 <div class="modal-header">
                     <h4 class="modal-title"></h4>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <!-- Modal Body -->
                 <div class="modal-body">
@@ -97,12 +97,14 @@
                         </div>
                         <div class="form-group">
                             <label for="role">Role:</label>
-                            <select class="form-control" id="role" name="role">
+                            <select class="form-select" id="role" name="role">
+                                <option value="">-Please Select-</option>
                                 <option value="admin">Admin</option>
                                 <option value="user">User</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary" style="margin-top: 5px">Submit</button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
+                        <button type="button" class="btn btn-secondary float-end" data-bs-dismiss="modal">Cancel</button>
                     </form>
                 </div>
             </div>

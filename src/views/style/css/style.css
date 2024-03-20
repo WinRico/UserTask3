@@ -144,3 +144,7 @@ body {
 .offline {
     color: #5d5d5d;
 }
+
+.btn{
+    margin-top: 5px;
+}
