@@ -1,14 +1,16 @@
+@import url("https://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css");
+
 body {
     font-size: .875rem;
     justify-content: center;
 }
 .container{
-
     justify-content: center;
     margin: auto;
 }
 .form-select{
     width: 300px;
+    margin-top: 5px;
 }
 .feather {
     width: 16px;

@@ -18,7 +18,7 @@
     <div class="row">
         <main role="main" class="col-md-12 ml-sm-auto col-lg-12 pt-3 px-4">
             <h3>Users</h3>
-            <div class="action-buttons d-flex align-items-center mb-3 gap-2">
+            <div class="action-buttons d-flex align-items-center mb-2 gap-2">
                 <button type="button" id="buttonAdd1" data-button-id="1" class="btn btn-primary">Add</button>
                 <form>
                     <select class="form-select actionSelect" id="actionSelect1">

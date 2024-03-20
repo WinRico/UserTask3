@@ -32,8 +32,8 @@ class UserView extends User
             $output .= '<td id="role' . $user['id'] . '">' . $user['role'] . '</td>';
             $output .= '<td>';
             $output .= '<div class="btn-group">';
-            $output .= '<button type="button" data-button-id="2" class="btn btn-sm btn-outline-secondary editBtn" data-id="' . $user['id'] . '"><i class="fa-regular fa-pen-to-square"></i></button>';
-            $output .= '<button type="button" class="btn btn-sm btn-outline-secondary deleteBtn" data-id="' . $user['id'] . '"><i class="fa-solid fa-trash"></i></button>';
+            $output .= '<button type="button" data-button-id="2" class="btn btn-sm btn-outline-secondary editBtn" data-id="' . $user['id'] . '"><i class="fa fa-pencil"></i></button>';
+            $output .= '<button type="button" class="btn btn-sm btn-outline-secondary deleteBtn" data-id="' . $user['id'] . '"><i class="fa fa-trash"></i></button>';
             $output .= '</div>';
             $output .= '</td>';
             $output .= '</tr>';

@@ -42,17 +42,15 @@ function clearFormFields() {
 
 // Функція додавання рядка в таблицю
 function addNewCollumn(userData,id){
-    statusClass = userData.status !== 0 ? 'offline' : 'online';
-    console.log(userData.firstName);
-    console.log(id);
+    statusClass = userData.status === 0 ? 'offline' : 'online';
     const newRow = $('<tr id="userRow_' + id + '">' +
         '<td><input type="checkbox" class="selectUser" data-id="' + id +'"></td>' +
         '<td id="userName' + id + '">' + userData.firstName + ' ' + userData.lastName + '</td>' +
         '<td id="status' + id + '" class="status-indicator ' + statusClass + '"><i class="fa fa-circle"></i></td>'  +
         '<td id="role' + id + '">' + userData.role + '</td>' +
         '<td>' + '<div class="btn-group">' + '<button type="button" data-button-id="2" class="btn btn-sm btn-outline-secondary editBtn" data-id="' + id + '">' +
-        '<i class="fa-regular fa-pen-to-square"></i></button>' +
-        '<button type="button" class="btn btn-sm btn-outline-secondary deleteBtn" data-id="' + id + '"><i class="fa-solid fa-trash"></i></button>' +
+        '<i class="fa fa-pencil"></i></button>' +
+        '<button type="button" class="btn btn-sm btn-outline-secondary deleteBtn" data-id="' + id + '"><i class="fa fa-trash"></i></i></button>' +
         '</div>' +
         '</td>' +
         '</tr>');
