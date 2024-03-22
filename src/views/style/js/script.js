@@ -152,7 +152,7 @@ function addUser(userData) {
                 }
                 console.log(response);
             } else {
-                console.error(response.error.message);
+                console.error(response);
                 $('#error-message').text(response.error.message).show(); // Показуємо повідомлення про помилку
             }
         },
@@ -210,7 +210,7 @@ function deleteUser(userIds) {
                     });
                     console.log(response);
                 } else {
-                    console.error(response.error.message);
+                    console.error(response);
                 }
             },
             error: function(xhr, status, error) {
@@ -232,7 +232,7 @@ function deleteUser(userIds) {
                     $('#userRow_' + userIds).remove();
                     console.log(response);
                 } else {
-                    console.error(response.error.message);
+                    console.error(response);
                 }
             },
             error: function(xhr, status, error) {
@@ -261,7 +261,7 @@ function doAction(selectedUsers, action) {
                 });
                 console.log(response);
             } else {
-                console.error(response.error.message);
+                console.error(response);
             }},
         error: function(xhr, status, error) {
             console.error(error);
@@ -352,7 +352,7 @@ $(document).on('submit', '#userModal', function(event){
     }
 });
 
-let deleting = '';
+
 // Обробник події клікання на кнопку збереження вибраних дій з користувачами
 $('.buttonOk').click(function(){
 
