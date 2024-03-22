@@ -13,8 +13,13 @@ function fetchData() {
     });
 }
 
+function selectAll(){
+    $('.selectUser').prop('checked', true);
+}
 
-
+function unSelectAll(){
+    $('.selectUser').prop('checked', false);
+}
 // Обробник події клікання на кнопку вибору всіх користувачів
 $(document).on('click', '#selectAll', function(){
     $('.selectUser').prop('checked', $(this).prop('checked'));
@@ -92,8 +97,8 @@ function getUserData(userId) {
                 user_id: userId
             },
             success: function(response) {
-                const userData = JSON.parse(response);
-                resolve(userData); // Повертаємо отримані дані через обіцянку
+                const userData =  JSON.parse(response);
+                resolve(userData.user); // Повертаємо отримані дані через обіцянку
             },
             error: function(xhr, status, error) {
                 reject(error); // Повертаємо помилку через обіцянку
@@ -102,37 +107,29 @@ function getUserData(userId) {
     });
 }
 
+
 // Функція для отримання в форму данних
 function UserFormField(userId,buttonId) {
-
-    // Відправка AJAX-запиту на сервер для отримання даних про користувача за його ID
-    $.ajax({
-        url: 'src/Controllers/MainController.php',
-        type: 'POST',
-        dataType: 'json',
-        data: {
-            action: 'getUserById',
-            user_id: userId
-        },
-        success: function(response) {
-            // Заповнення отриманими даними полів форми редагування користувача
-            $('#firstName').val(response[0].firstname);
-            $('#lastName').val(response[0].lastname);
-            if (response[0].status === 'No active'){
+    clearFormFields();
+  // Заповнення отриманими даними полів форми редагування користувача
+    getUserData(userId)
+        .then(userData =>{
+            $('#firstName').val(userData[0].firstname || '');
+            $('#lastName').val(userData[0].lastname || '');
+            if (userData[0].status === 'No active'){
                 $('#status').prop('checked', false);
             }
             else {
                 $('#status').prop('checked', true);
             }
-            $('#role').val(response[0].role);
+            $('#role').val(userData[0].role || '');
 
             // Відображення модального вікна редагування користувача
             $(userModal).data('button-id', buttonId).data('id', userId).modal('show');
-        },
-        error: function(xhr, status, error) {
-            console.error(error);
-        }
-    });
+        })
+        .catch(error =>{
+            console.log(error);
+        })
 }
 
 // Функція для додавання користувача
@@ -149,11 +146,14 @@ function addUser(userData) {
         success: function(response) {
             if (response.status) {
                 $('#userModal').modal('hide'); // При успішному додаванні користувача ховаємо модальне вікно
-                addNewCollumn(userData,response.id);
-                console.log(response.message);
+                addNewCollumn(userData,response.user.id);
+                if ($('#selectAll').prop('checked')) {
+                   selectAll();
+                }
+                console.log(response);
             } else {
-                console.error(response.message);
-                $('#error-message').text(response.message).show(); // Показуємо повідомлення про помилку
+                console.error(response.error.message);
+                $('#error-message').text(response.error.message).show(); // Показуємо повідомлення про помилку
             }
         },
         error: function(xhr, status, error) {
@@ -178,10 +178,10 @@ function editUser(userData){
             if (response.status) {
                 $('#userModal').modal('hide');
                 editCollumn(userData)
-                console.log(response.message);
+                console.log(response);
             } else {
-                console.error(response.message);
-                $('#error-message').text(response.message).show(); // Показуємо повідомлення про помилку
+                console.error(response);
+                $('#error-message').text(response.error.message).show(); // Показуємо повідомлення про помилку
             }},
         error: function(xhr, status, error) {
             console.error(error);
@@ -189,36 +189,58 @@ function editUser(userData){
     });
 }
 
-// Функція для видалення користувача
-function deleteUser(userId) {
-
-    // Відправка AJAX-запиту на сервер для отримання даних про користувача за його ID
-    $.ajax({
-        url: 'src/Controllers/MainController.php',
-        type: 'POST',
-        data: {
-            action: 'deleteUser',
-            userId: userId
-        },
-        success: function(response) {
-            if (response.status) {
-                if (Array.isArray(userId)) {
-                    userId.forEach(function(id) {
+// Функція для видалення користувача чи кількох користувачів
+function deleteUser(userIds) {
+    // Перевірка, чи є переданий параметр масивом
+    if (Array.isArray(userIds)) {
+        // AJAX-запит для видалення кількох користувачів одночасно
+        $.ajax({
+            url: 'src/Controllers/MainController.php',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'deleteUser',
+                userId: userIds // Передача масиву userIds
+            },
+            success: function(response) {
+                if (response.status) {
+                    // Видалення кожного користувача з таблиці
+                    userIds.forEach(function(id) {
                         $('#userRow_' + id).remove();
                     });
+                    console.log(response);
                 } else {
-                    $('#userRow_' + userId).remove();
+                    console.error(response.error.message);
                 }
-                console.log(response.message);
-            } else {
-                console.error(response.message);
-            }},
-        error: function(xhr, status, error) {
-            console.error(error);
-        }
-    });
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
+        });
+    } else {
+        // AJAX-запит для видалення одного користувача
+        $.ajax({
+            url: 'src/Controllers/MainController.php',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'deleteUser',
+                userId: userIds // Передача одного userId
+            },
+            success: function(response) {
+                if (response.status) {
+                    $('#userRow_' + userIds).remove();
+                    console.log(response);
+                } else {
+                    console.error(response.error.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
+        });
+    }
 }
-
 
 // Функція для виконання дії з вибраними користувачами
 function doAction(selectedUsers, action) {
@@ -228,7 +250,7 @@ function doAction(selectedUsers, action) {
         method: 'POST',
         dataType: 'json',
         data: {
-            action: 'actionWithSelectedUsers',
+            action: 'updateStatusSelectedUsers',
             userIds: selectedUsers,
             actionSelected: action,
         },
@@ -237,12 +259,12 @@ function doAction(selectedUsers, action) {
                 selectedUsers.forEach(function(userId) {
                     updateStatus(userId,action);
                 });
-                console.log(response.message);
+                console.log(response);
             } else {
-                console.error(response.message);
+                console.error(response.error.message);
             }},
         error: function(xhr, status, error) {
-            console.error('Error deleting user:', error);
+            console.error(error);
         }
     });
 }
@@ -262,7 +284,7 @@ function confirmAction(action, userData) {
         if (action === 'delete') {
             deleteUser(userData[0].id);
         }
-        $('#confirmModal').modal('hide');
+
     });
 }
 
@@ -330,11 +352,14 @@ $(document).on('submit', '#userModal', function(event){
     }
 });
 
-
+let deleting = '';
 // Обробник події клікання на кнопку збереження вибраних дій з користувачами
 $('.buttonOk').click(function(){
+
     let actionSelect = $(this).data('select');
     let action = $(actionSelect).val();
+    let selectedUsers = [];
+
     //Поля форми повідомлень помилок
     const massageModal = document.getElementById('massageModel');
     const modalBody = massageModal.querySelector('.modal-body');
@@ -359,8 +384,6 @@ $('.buttonOk').click(function(){
         return false;
     }
 
-    let selectedUsers = [];
-
     // Збір ID обраних користувачів
     $('.selectUser:checked').each(function() {
         let userId = $(this).data('id');
@@ -377,8 +400,9 @@ $('.buttonOk').click(function(){
             modalTitle.textContent = 'Delete Confirmation';
             modalBody.textContent = 'Are you sure you want to delete this users?';
             modalAction.textContent = 'Delete';
+            let a = 0;
             $('#confirmModal').modal('show');
-            $('#confirmBtn').click(function () {
+            $('#confirmBtn').off('click').on('click', function () {
                 deleteUser(selectedUsers); // Викликаємо функцію для видалення користувача
                 $('#confirmModal').modal('hide'); // Ховаємо модальне вікно підтвердження
             });

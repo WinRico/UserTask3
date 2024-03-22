@@ -8,8 +8,12 @@ body {
     justify-content: center;
     margin: auto;
 }
-.form-select{
+.form-select.actionSelect{
     width: 300px;
+    margin-top: 5px;
+}
+.modalSelect{
+    width: 100%;
     margin-top: 5px;
 }
 .feather {

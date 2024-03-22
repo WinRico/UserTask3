@@ -15,11 +15,6 @@ class UserView extends User
      * @return void
      */
     public function userView($userObject) {
-        // Перевірка, чи масив користувачів не порожній
-        if (empty($userObject)) {
-            echo "No users found."; // Вивід повідомлення про відсутність користувачів
-            return;
-        }
 
         $output = "";
         // Цикл по кожному користувачеві
