@@ -44,16 +44,12 @@ class User {
      * @param string $firstName Ім'я користувача.
      * @param string $lastName Прізвище користувача.
      * @param int $status Статус користувача (1 - активний, 0 - неактивний).
-     * @param string $role Роль користувача.
+     * @param int $role Роль користувача.
      * @return string JSON-рядок з результатом операції.
      */
     public function addUser($firstName, $lastName, $status, $role) {
-        // Конвертація статусу в рядок
-        $status = ($status == 1) ? 'Active' : 'No Active';
-
         // SQL запит на додавання користувача
         $query = "INSERT INTO users (firstname, lastname, status, role) VALUES (?, ?, ?, ?)";
-
         // Виконання запиту
         $stmt = $this->db->prepare($query);
         $stmt->execute([$firstName, $lastName, $status, $role]);
@@ -64,8 +60,7 @@ class User {
         return json_encode(['status' => true, 'error' => null, 'id' => $userId]);
     }
     function updateUser($id, $firstname, $lastname, $status, $role){
-
-        $status = ($status == 1) ? 'Active' : 'No Active';
+        $status =  $status ? 1 : 0;
         $updatedUser = $this->updateUserById($id, $firstname, $lastname, $status, $role);
         if (!$updatedUser) {
             return json_encode(['status' => false, 'error' => ['code' => 100, 'message' => 'not found user']]);
@@ -80,10 +75,11 @@ class User {
      * @param string $firstname Ім'я користувача.
      * @param string $lastname Прізвище користувача.
      * @param int $status Статус користувача (1 - активний, 0 - неактивний).
-     * @param string $role Роль користувача.
+     * @param int $role Роль користувача.
      * @return bool Результат операції (чи вдалося оновити дані користувача).
      */
     function updateUserById($id, $firstname, $lastname, $status, $role){
+
         $query = "UPDATE users SET firstname = ?, lastname = ?, status = ?, role = ? WHERE id = ?";
         $stmt = $this->db->prepare($query);
 
@@ -99,7 +95,7 @@ class User {
      */
     function updateStatusUsersById($userIds,$action){
 
-        $status = $action === 'setActive' ? 'Active' : 'No Active';
+        $status = $action === 'setActive' ? 1 : 0;
         $query = "UPDATE users SET status = ? WHERE id = ?";
         $stmt = $this->db->prepare($query);
 

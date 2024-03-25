@@ -74,37 +74,40 @@
                     <h4 class="modal-title"></h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <!-- Modal Body -->
-                <div class="modal-body">
                     <form id="userForm">
-                        <div id="error-message" class="alert alert-danger" style="display: none;"></div>
-                        <div class="form-group">
-                            <label for="firstName">First Name:</label>
-                            <input type="text" class="form-control" id="firstName" name="firstName">
-                        </div>
-                        <div class="form-group">
-                            <label for="lastName">Last Name:</label>
-                            <input type="text" class="form-control" id="lastName" name="lastName">
-                        </div>
-                        <div class="form-group">
-                            <label class="switch" for="status">Status:</label>
-                            <div class="cl-toggle-switch">
-                                <label class="cl-switch">
-                                    <input type="checkbox" id="status">
-                                    <span></span>
-                                </label>
+                        <!-- Modal Body -->
+                        <div class="modal-body">
+                            <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+                            <div class="form-group">
+                                <label for="firstName">First Name:</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName">
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name:</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName">
+                            </div>
+                            <div class="form-group">
+                                <label class="switch" for="status">Status:</label>
+                                <div class="cl-toggle-switch">
+                                    <label class="cl-switch">
+                                        <input type="checkbox" id="status">
+                                        <span></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="role">Role:</label>
+                                <select class="form-select modalSelect" id="role" name="role">
+                                    <option value="">-Please Select-</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="user">User</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="role">Role:</label>
-                            <select class="form-select modalSelect" id="role" name="role">
-                                <option value="">-Please Select-</option>
-                                <option value="admin">Admin</option>
-                                <option value="user">User</option>
-                            </select>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
+                            <button type="button" class="btn btn-secondary float-end" data-bs-dismiss="modal">Cancel</button>
                         </div>
-                        <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
-                        <button type="button" class="btn btn-secondary float-end" data-bs-dismiss="modal">Cancel</button>
                     </form>
                 </div>
             </div>

@@ -19,12 +19,13 @@ class UserView extends User
         $output = "";
         // Цикл по кожному користувачеві
         foreach ($userObject as $user) {
-            $statusClass = $user['status'] != 'Active' ? 'offline' : 'online';
+            $statusClass = !$user['status'] ? 'offline' : 'online';
+            $role = $user['role'] != 1 ? 'user' : 'admin';
             $output .= '<tr id="userRow_' . $user['id'] . '">';
             $output .= '<td><input type="checkbox" class="selectUser" data-id="' . $user['id'] . '"></td>';
             $output .= '<td id="userName' . $user['id'] . '">' . $user['firstname'] . ' ' . $user['lastname'] . '</td>';
             $output .= '<td id="status' . $user['id'] . '" class="status-indicator ' . $statusClass . '"><i class="fa fa-circle"></i></td>';
-            $output .= '<td id="role' . $user['id'] . '">' . $user['role'] . '</td>';
+            $output .= '<td id="role' . $user['id'] . '">' . $role . '</td>';
             $output .= '<td>';
             $output .= '<div class="btn-group">';
             $output .= '<button type="button" data-button-id="2" class="btn btn-sm btn-outline-secondary editBtn" data-id="' . $user['id'] . '"><i class="fa fa-pencil"></i></button>';

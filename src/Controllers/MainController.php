@@ -19,8 +19,10 @@ if (isset($_POST['action'])) {
                         if (! is_numeric($userData['firstName']) && ! is_numeric($userData['lastName'])) {
                             $firstName = $userData['firstName'];
                             $lastName = $userData['lastName'];
-                            $status = $userData['status'];
-                            $role = $userData['role'];
+                            $status = filter_var($_POST['userData']['status'], FILTER_VALIDATE_BOOLEAN);
+                            $role =  $userData['role'];
+                            // Конвертація ролі
+                            $role = ($role == 'admin') ? 1 : 0;
 
                             $stmt = new User();
                             $result = $stmt->addUser($firstName, $lastName, $status, $role);
@@ -32,6 +34,9 @@ if (isset($_POST['action'])) {
                                 'id' => $id,
                                 'firstName' => $firstName,
                                 'lastName' => $lastName,
+                                'status' => $status,
+                                'role' => $role,
+
                             ];
                             if ($result) {
                                 echo json_encode(['status' => true, 'error' => null, 'user' => $addedUser]);
@@ -83,8 +88,11 @@ if (isset($_POST['action'])) {
                         if (! is_numeric($userData['firstName']) && ! is_numeric($userData['lastName'])) {
                             $firstName = $userData['firstName'];
                             $lastName = $userData['lastName'];
-                            $status = $userData['status'];
+                            $status = filter_var($_POST['userData']['status'], FILTER_VALIDATE_BOOLEAN);
                             $role = $userData['role'];
+
+                            // Конвертація ролі
+                            $role = ($role == 'admin') ? 1 : 0;
                             $userId = $userData['userId'];
 
                             $userModel = new User();
@@ -94,6 +102,8 @@ if (isset($_POST['action'])) {
                                 'id' => $userId,
                                 'firstName' => $firstName,
                                 'lastName' => $lastName,
+                                'status' => $status,
+                                'role' => $role,
                             ];
 
                             if ($result) {

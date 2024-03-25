@@ -47,7 +47,7 @@ function clearFormFields() {
 
 // Функція додавання рядка в таблицю
 function addNewCollumn(userData,id){
-    statusClass = userData.status === 0 ? 'offline' : 'online';
+    statusClass = !userData.status  ? 'offline' : 'online';
     const newRow = $('<tr id="userRow_' + id + '">' +
         '<td><input type="checkbox" class="selectUser" data-id="' + id +'"></td>' +
         '<td id="userName' + id + '">' + userData.firstName + ' ' + userData.lastName + '</td>' +
@@ -66,11 +66,11 @@ function addNewCollumn(userData,id){
 // Функція редагування рядка в таблиці
 function editCollumn(userData){
     const table = $('#userTable');
-    const row = table.find('#userRow_' + userData.userId); // Змінено з 'userRow_' на '#userRow_'
-    statusClass = userData.status === 0 ? 'setNotActive' : 'setActive';
+    const row = table.find('#userRow_' + userData.userId);
+    statusClass = !userData.status  ? 'setNotActive' : 'setActive';
     updateStatus(userData.userId, statusClass);
-    row.find('#userName' + userData.userId).text(userData.firstName + ' ' + userData.lastName); // Виправлено індекси
-    row.find('#role' + userData.userId).text(userData.role); // Виправлено індекси
+    row.find('#userName' + userData.userId).text(userData.firstName + ' ' + userData.lastName);
+    row.find('#role' + userData.userId).text(userData.role);
 }
 
 // Функція для оновлення статусу користувача в таблиці
@@ -88,48 +88,46 @@ function updateStatus(userId, status) {
 // функція отримання даних користувача за id;
 function getUserData(userId) {
     return new Promise((resolve, reject) => {
-        // AJAX-запит для отримання даних користувача з бази даних
-        $.ajax({
-            url: 'src/Controllers/MainController.php',
-            type: 'POST',
-            data: {
-                action: 'getUserById',
-                user_id: userId
-            },
-            success: function(response) {
-                const userData =  JSON.parse(response);
-                resolve(userData.user); // Повертаємо отримані дані через обіцянку
-            },
-            error: function(xhr, status, error) {
-                reject(error); // Повертаємо помилку через обіцянку
-            }
-        });
+        let userName = $('#userName' + userId).text();
+        let firstName = userName.split(" ")[0];
+        let lastName = userName.split(" ").slice(1).join(" ");
+        let role = $('#role' + userId).text();
+        let statusElement = $('#status' + userId);
+        let status = !!statusElement.hasClass('online');
+       let userData = {
+           userId : userId,
+           firstName : firstName,
+           lastName : lastName,
+           role : role,
+           status : status,
+       };
+       if (userData){
+           resolve(userData);
+       }else {
+           console.error('Missing user');
+       }
     });
 }
 
 
 // Функція для отримання в форму данних
-function UserFormField(userId,buttonId) {
+function UserFormField(dataForm,buttonId) {
     clearFormFields();
-  // Заповнення отриманими даними полів форми редагування користувача
-    getUserData(userId)
-        .then(userData =>{
-            $('#firstName').val(userData[0].firstname || '');
-            $('#lastName').val(userData[0].lastname || '');
-            if (userData[0].status === 'No active'){
-                $('#status').prop('checked', false);
-            }
-            else {
-                $('#status').prop('checked', true);
-            }
-            $('#role').val(userData[0].role || '');
 
-            // Відображення модального вікна редагування користувача
-            $(userModal).data('button-id', buttonId).data('id', userId).modal('show');
-        })
-        .catch(error =>{
-            console.log(error);
-        })
+    // Заповнення отриманими даними полів форми редагування користувача
+    $('#firstName').val(dataForm['firstName'] || '');
+    $('#lastName').val(dataForm['lastName'] || '');
+    if (!dataForm['status'] ){
+        $('#status').prop('checked', false);
+    }
+    else {
+        $('#status').prop('checked', true);
+    }
+    $('#role').val(dataForm['role'] || '');
+
+    // Відображення модального вікна редагування користувача
+    $(userModal).data('button-id', buttonId).data('id', dataForm['userId']).modal('show');
+
 }
 
 // Функція для додавання користувача
@@ -277,12 +275,13 @@ function confirmAction(action, userData) {
     const modalBody = confirmModal.querySelector('.modal-body');
     const modalAction = confirmModal.querySelector('.btn-danger');
     modalTitle.textContent = 'Confirm ' + action; // Змінюємо заголовок модального вікна залежно від дії
-    modalBody.textContent = 'Are you sure you want to ' + action + ' ' + userData[0].firstname + ' ' + userData[0].lastname + '?'; // Встановлюємо текст повідомлення залежно від дії та даних про користувача
+    modalBody.textContent = 'Are you sure you want to ' + action + ' ' + userData['firstName'] + ' ' + userData['lastName'] + '?'; // Встановлюємо текст повідомлення залежно від дії та даних про користувача
     modalAction.textContent = action; // Встановлюємо текст кнопки підтвердження дії
     $('#confirmModal').modal('show');
     $('#confirmBtn').off('click').on('click', function() {
         if (action === 'delete') {
-            deleteUser(userData[0].id);
+            deleteUser(userData['userId']);
+            $('#confirmModal').modal('hide');
         }
 
     });
@@ -303,13 +302,19 @@ $('#buttonAdd1, #buttonAdd2').click(function(){
 
 // Обробник події клікання на кнопку редагування користувача
 $(document).on('click', '.editBtn', function() {
+
     let buttonId = 2;
-    let userId = $(this).data('id');
-    const userModal = document.getElementById('userModal');
-    const modalTitle = userModal.querySelector('.modal-title');
-    modalTitle.textContent = 'Update';
-    $('#error-message').hide();
-    UserFormField(userId,buttonId);
+    let userId =  $(this).data('id');
+
+    getUserData(userId)
+        .then(userData => {
+            const userModal = document.getElementById('userModal');
+            const modalTitle = userModal.querySelector('.modal-title');
+            modalTitle.textContent = 'Update';
+            $('#error-message').hide();
+            UserFormField(userData,buttonId);
+        })
+
 });
 
 
@@ -318,11 +323,8 @@ $(document).on('click', '.editBtn', function() {
 $(document).on('click', '.deleteBtn', function() {
     const userId = $(this).data('id');
     getUserData(userId)
-        .then(userData =>{
+        .then(userData => {
             confirmAction('delete',userData);
-        })
-        .catch(error =>{
-            console.log(error);
         })
 });
 
@@ -335,7 +337,7 @@ $(document).on('submit', '#userModal', function(event){
     let firstName = $('#firstName').val();
     let lastName = $('#lastName').val();
     let role = $('#role').val();
-    let status = $('#status').is(':checked') ? 1 : 0;
+    let status = !!$('#status').is(':checked');
     let buttonId = $(this).data('button-id');
     let userId = $(this).data('id');
     let requestData = {
@@ -400,7 +402,6 @@ $('.buttonOk').click(function(){
             modalTitle.textContent = 'Delete Confirmation';
             modalBody.textContent = 'Are you sure you want to delete this users?';
             modalAction.textContent = 'Delete';
-            let a = 0;
             $('#confirmModal').modal('show');
             $('#confirmBtn').off('click').on('click', function () {
                 deleteUser(selectedUsers); // Викликаємо функцію для видалення користувача
