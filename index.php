@@ -104,6 +104,7 @@
                                 </select>
                             </div>
                         </div>
+                        <!-- Modal Footer -->
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
                             <button type="button" class="btn btn-secondary float-end" data-bs-dismiss="modal">Cancel</button>
