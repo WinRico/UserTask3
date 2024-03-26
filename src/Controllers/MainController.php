@@ -6,6 +6,13 @@ require_once '../../vendor/autoload.php';
 use App\Models\User;
 use App\Models\UserView;
 
+/**
+ * @param User $userModel
+ * @param string $userIds
+ * @return void
+ */
+
+
 if (isset($_POST['action'])) {
     $action = $_POST['action'];
 
@@ -15,12 +22,12 @@ if (isset($_POST['action'])) {
             if (! empty($_REQUEST['userData'])) {
                 $userData = $_POST['userData'];
                 if (! empty(trim($userData['firstName'])) && ! empty(trim($userData['lastName'])) && ! empty($userData['role'])) {
-                    if (!preg_match('/^[a-z]+\s+[a-z]+$/i', $userData['firstName'])&& !preg_match('/^[a-z]+\s+[a-z]+$/i', $userData['lastName'])) {
+                    if (! preg_match('/^[a-z]+\s+[a-z]+$/i', $userData['firstName']) && ! preg_match('/^[a-z]+\s+[a-z]+$/i', $userData['lastName'])) {
                         if (! is_numeric($userData['firstName']) && ! is_numeric($userData['lastName'])) {
                             $firstName = $userData['firstName'];
                             $lastName = $userData['lastName'];
                             $status = filter_var($_POST['userData']['status'], FILTER_VALIDATE_BOOLEAN);
-                            $role =  $userData['role'];
+                            $role = $userData['role'];
                             // Конвертація ролі
                             $role = ($role == 'admin') ? 1 : 0;
 
@@ -61,14 +68,26 @@ if (isset($_POST['action'])) {
             if (! empty($_POST['userId'])) {
                 $userIds = $_POST['userId'];
                 $userModel = new User();
+                $result = false;
+                header('Content-Type: application/json');
+
                 if (! is_string($userIds)) {
                     foreach ($userIds as $id) {
-                        $result = $userModel->deleteUser($id);
+                        if (! $userModel->getUsersById($id)) {
+                            echo json_encode(['status' => false, 'error' => ['code' => 101, 'message' => 'Cannot find this user']]);
+                            return;
+                        }
+                        else {
+                            $result = $userModel->deleteUser($id);
+                        }
                     }
                 } else {
+                    if (! $userModel->getUsersById($userIds)) {
+                        echo json_encode(['status' => false, 'error' => ['code' => 101, 'message' => 'Cannot find this user']]);
+                        return;
+                    }
                     $result = $userModel->deleteUser($userIds);
                 }
-                header('Content-Type: application/json');
                 if ($result) {
                     echo json_encode(['status' => true, 'error' => null]);
                 } else {
@@ -81,22 +100,18 @@ if (isset($_POST['action'])) {
             break;
 
         case 'editUser':
-            if (!empty($_REQUEST['userData'])) {
+            if (! empty($_REQUEST['userData'])) {
                 $userData = $_POST['userData'];
-                if (!empty(trim($userData['firstName'])) && ! empty(trim($userData['lastName'])) && ! empty($userData['role'])) {
-                    if (!preg_match('/^[a-z]+\s+[a-z]+$/i', $userData['firstName']) && !preg_match('/^[a-z]+\s+[a-z]+$/i', $userData['lastName'])) {
+                if (! empty(trim($userData['firstName'])) && ! empty(trim($userData['lastName'])) && ! empty($userData['role'])) {
+                    if (! preg_match('/^[a-z]+\s+[a-z]+$/i', $userData['firstName']) && ! preg_match('/^[a-z]+\s+[a-z]+$/i', $userData['lastName'])) {
                         if (! is_numeric($userData['firstName']) && ! is_numeric($userData['lastName'])) {
+                            $userId = $userData['userId'];
                             $firstName = $userData['firstName'];
                             $lastName = $userData['lastName'];
                             $status = filter_var($_POST['userData']['status'], FILTER_VALIDATE_BOOLEAN);
                             $role = $userData['role'];
-
                             // Конвертація ролі
                             $role = ($role == 'admin') ? 1 : 0;
-                            $userId = $userData['userId'];
-
-                            $userModel = new User();
-                            $result = $userModel->updateUser($userId, $firstName, $lastName, $status, $role);
 
                             $editedUser = [
                                 'id' => $userId,
@@ -105,17 +120,22 @@ if (isset($_POST['action'])) {
                                 'status' => $status,
                                 'role' => $role,
                             ];
-
-                            if ($result) {
-                                echo json_encode(['status' => true, 'error' => null , 'user' => $editedUser ]);
+                            $userModel = new User();
+                            if (! $userModel->getUsersById($userId)) {
+                                echo json_encode(['status' => false, 'error' => ['code' => 101, 'message' => 'Cannot find this user']]);
                             } else {
-                                echo json_encode(['status' => false, 'error' => ['code' => 100, 'message' => 'Failed to edit user']]);
+                                $result = $userModel->updateUser($userId, $firstName, $lastName, $status, $role);
+                                if ($result) {
+                                    echo json_encode(['status' => true, 'error' => null, 'user' => $editedUser]);
+                                } else {
+                                    echo json_encode(['status' => false, 'error' => ['code' => 100, 'message' => 'Failed to edit user']]);
+                                }
                             }
+
                         } else {
                             echo json_encode(['status' => false, 'error' => ['code' => 100, 'message' => 'First name and last name cannot be numeric']]);
                         }
-                    }
-                    else {
+                    } else {
                         echo json_encode(['status' => false, 'error' => ['code' => 100, 'message' => 'Incorrect input values']]);
                     }
                 } else {
@@ -130,18 +150,22 @@ if (isset($_POST['action'])) {
             if (! empty($_POST['userIds']) && ! empty($_POST['actionSelected'])) {
                 $userIds = $_POST['userIds'];
                 $actionSelected = $_POST['actionSelected'];
-
+                $result = false;
                 $userModel = new User();
 
                 foreach ($userIds as $id) {
-                    $result = $userModel->updateStatusUsersById($id, $actionSelected);
+                    if (! $userModel->getUsersById($id)) {
+                        echo json_encode(['status' => false, 'error' => ['code' => 101, 'message' => 'Cannot find this user']]);
+                        return;
+                    } else {
+                        $result = $userModel->updateStatusUsersById($id, $actionSelected);
+                    }
                 }
                 if ($result) {
                     echo json_encode(['status' => true, 'error' => null]);
                 } else {
                     echo json_encode(['status' => false, 'error' => ['code' => 100, 'message' => 'Failed to edit users']]);
                 }
-
             } else {
                 // Вивід повідомлення, якщо якесь з обов'язкових полів порожнє
                 echo json_encode(['status' => false, 'error' => ['code' => 100, 'message' => 'Missing id']]);
@@ -159,7 +183,7 @@ if (isset($_POST['action'])) {
                 $userId = $_POST['user_id'];
                 $userModel = new User();
                 $userData = $userModel->getUsersById($userId);
-                if (!empty($userData)) {
+                if (! empty($userData)) {
                     echo json_encode(['status' => true, 'error' => null, 'user' => $userData]);
                 } else {
                     echo json_encode(['status' => false, 'error' => ['code' => 100, 'message' => 'Not found user']]);

@@ -178,8 +178,13 @@ function editUser(userData){
                 editCollumn(userData)
                 console.log(response);
             } else {
-                console.error(response);
-                $('#error-message').text(response.error.message).show(); // Показуємо повідомлення про помилку
+                if(response.error.code === 101 ){
+                    $('#userModal').modal('hide');
+                    fetchData();
+                }else {
+                    console.error(response);
+                    $('#error-message').text(response.error.message).show(); // Показуємо повідомлення про помилку
+                }
             }},
         error: function(xhr, status, error) {
             console.error(error);
@@ -208,7 +213,11 @@ function deleteUser(userIds) {
                     });
                     console.log(response);
                 } else {
-                    console.error(response);
+                    if(response.error.code === 101 ){
+                        fetchData();
+                    }else {
+                        console.error(response);
+                    }
                 }
             },
             error: function(xhr, status, error) {
@@ -230,7 +239,11 @@ function deleteUser(userIds) {
                     $('#userRow_' + userIds).remove();
                     console.log(response);
                 } else {
-                    console.error(response);
+                    if(response.error.code === 101 ){
+                        fetchData();
+                    }else {
+                        console.error(response);
+                    }
                 }
             },
             error: function(xhr, status, error) {
@@ -253,13 +266,18 @@ function doAction(selectedUsers, action) {
             actionSelected: action,
         },
         success: function (response) {
+            console.log(response);
             if (response.status) {
                 selectedUsers.forEach(function(userId) {
                     updateStatus(userId,action);
                 });
                 console.log(response);
             } else {
-                console.error(response);
+                if(response.error.code === 101 ){
+                    fetchData();
+                }else {
+                    console.error(response);
+                }
             }},
         error: function(xhr, status, error) {
             console.error(error);
