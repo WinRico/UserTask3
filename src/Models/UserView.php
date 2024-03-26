@@ -15,8 +15,17 @@ class UserView extends User
      * @return void
      */
     public function userView($userObject) {
+        $output = '<table id="userTable" class="table table-bordered">';
+        $output .='<thead><tr>';
+        $output .='<th><input type="checkbox" id="selectAll"></th>';
+        $output .='<th>Name</th>';
+        $output .='<th>Status</th>';
+        $output .='<th>Role</th>';
+        $output .='<th>Actions</th>';
+        $output .='</tr>';
+        $output .='</thead>';
+        $output .='<tbody>';
 
-        $output = "";
         // Цикл по кожному користувачеві
         foreach ($userObject as $user) {
             $statusClass = !$user['status'] ? 'offline' : 'online';
@@ -34,7 +43,7 @@ class UserView extends User
             $output .= '</td>';
             $output .= '</tr>';
         }
-
+        $output .='</tbody></table>';
         echo $output;
     }
 }

@@ -1,3 +1,10 @@
+<?php
+require_once 'vendor/autoload.php';
+use App\Models\UserView;
+
+$userModel = new UserView();
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,19 +41,7 @@
     </div>
     <div class="row">
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-            <table id="userTable" class="table table-bordered">
-                <thead>
-                <tr>
-                    <th><input type="checkbox" id="selectAll"></th>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>Role</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody id="live_content">
-                </tbody>
-            </table>
+            <?= $userModel->userView($userModel->getUsers()) ?>
         </main>
     </div>
     <div class="row">
@@ -106,8 +101,8 @@
                         </div>
                         <!-- Modal Footer -->
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
                             <button type="button" class="btn btn-secondary float-end" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
                         </div>
                     </form>
                 </div>
