@@ -50,9 +50,9 @@ function addNewCollumn(userData,id){
     statusClass = !userData.status  ? 'offline' : 'online';
     const newRow = $('<tr id="userRow_' + id + '">' +
         '<td><input type="checkbox" class="selectUser" data-id="' + id +'"></td>' +
-        '<td id="userName' + id + '">' + userData.firstName + ' ' + userData.lastName + '</td>' +
-        '<td id="status' + id + '" class="status-indicator ' + statusClass + '"><i class="fa fa-circle"></i></td>'  +
-        '<td id="role' + id + '">' + userData.role + '</td>' +
+        '<td><a id="firstName_' + id + '">' + userData.firstName + '</a>' + ' ' + '<a id="lastName_' + id + '">' + userData.lastName + '</a></td>'+
+        '<td id="status_' + id + '" class="status-indicator ' + statusClass + '"><i class="fa fa-circle"></i></td>'  +
+        '<td id="role_' + id + '">' + userData.role + '</td>' +
         '<td>' + '<div class="btn-group">' + '<button type="button" data-button-id="2" class="btn btn-sm btn-outline-secondary editBtn" data-id="' + id + '">' +
         '<i class="fa fa-pencil"></i></button>' +
         '<button type="button" class="btn btn-sm btn-outline-secondary deleteBtn" data-id="' + id + '"><i class="fa fa-trash"></i></i></button>' +
@@ -69,14 +69,15 @@ function editCollumn(userData){
     const row = table.find('#userRow_' + userData.userId);
     statusClass = !userData.status  ? 'setNotActive' : 'setActive';
     updateStatus(userData.userId, statusClass);
-    row.find('#userName' + userData.userId).text(userData.firstName + ' ' + userData.lastName);
-    row.find('#role' + userData.userId).text(userData.role);
+    row.find('#firstName_' + userData.userId).text(userData.firstName);
+    row.find('#lastName_' + userData.userId).text(userData.lastName);
+    row.find('#role_' + userData.userId).text(userData.role);
 }
 
 // Функція для оновлення статусу користувача в таблиці
 function updateStatus(userId, status) {
 
-    const statusElement = $('#status' + userId); // Знаходимо елемент статусу за його ID
+    const statusElement = $('#status_' + userId); // Знаходимо елемент статусу за його ID
     if (status === "setActive") {
         statusElement.removeClass('offline').addClass('online');
     } else {
@@ -88,11 +89,10 @@ function updateStatus(userId, status) {
 // функція отримання даних користувача за id;
 function getUserData(userId) {
     return new Promise((resolve, reject) => {
-        let userName = $('#userName' + userId).text();
-        let firstName = userName.split(" ")[0];
-        let lastName = userName.split(" ").slice(1).join(" ");
-        let role = $('#role' + userId).text();
-        let statusElement = $('#status' + userId);
+        let firstName = $('#firstName_' + userId).text();
+        let lastName = $('#lastName_' + userId).text();
+        let role = $('#role_' + userId).text();
+        let statusElement = $('#status_' + userId);
         let status = !!statusElement.hasClass('online');
        let userData = {
            userId : userId,
@@ -266,7 +266,6 @@ function doAction(selectedUsers, action) {
             actionSelected: action,
         },
         success: function (response) {
-            console.log(response);
             if (response.status) {
                 selectedUsers.forEach(function(userId) {
                     updateStatus(userId,action);
@@ -326,6 +325,7 @@ $(document).on('click', '.editBtn', function() {
 
     getUserData(userId)
         .then(userData => {
+            console.log(userData);
             const userModal = document.getElementById('userModal');
             const modalTitle = userModal.querySelector('.modal-title');
             modalTitle.textContent = 'Update';
@@ -351,7 +351,6 @@ $(document).on('click', '.deleteBtn', function() {
 // Обробник події відправки форми для додавання/редагування користувача
 $(document).on('submit', '#userModal', function(event){
     event.preventDefault();
-
     let firstName = $('#firstName').val();
     let lastName = $('#lastName').val();
     let role = $('#role').val();

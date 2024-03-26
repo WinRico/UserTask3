@@ -23,9 +23,9 @@ class UserView extends User
             $role = $user['role'] != 1 ? 'user' : 'admin';
             $output .= '<tr id="userRow_' . $user['id'] . '">';
             $output .= '<td><input type="checkbox" class="selectUser" data-id="' . $user['id'] . '"></td>';
-            $output .= '<td id="userName' . $user['id'] . '">' . $user['firstname'] . ' ' . $user['lastname'] . '</td>';
-            $output .= '<td id="status' . $user['id'] . '" class="status-indicator ' . $statusClass . '"><i class="fa fa-circle"></i></td>';
-            $output .= '<td id="role' . $user['id'] . '">' . $role . '</td>';
+            $output .= '<td><a id="firstName_' . $user['id'] . '">' . $user['firstname'] . '</a>'. ' ' .'<a id="lastName_' . $user['id'] . '">' . $user['lastname'] . '</a></td>';
+            $output .= '<td id="status_' . $user['id'] . '" class="status-indicator ' . $statusClass . '"><i class="fa fa-circle"></i></td>';
+            $output .= '<td id="role_' . $user['id'] . '">' . $role . '</td>';
             $output .= '<td>';
             $output .= '<div class="btn-group">';
             $output .= '<button type="button" data-button-id="2" class="btn btn-sm btn-outline-secondary editBtn" data-id="' . $user['id'] . '"><i class="fa fa-pencil"></i></button>';

@@ -22,7 +22,7 @@ if (isset($_POST['action'])) {
             if (! empty($_REQUEST['userData'])) {
                 $userData = $_POST['userData'];
                 if (! empty(trim($userData['firstName'])) && ! empty(trim($userData['lastName'])) && ! empty($userData['role'])) {
-                    if (! preg_match('/^[a-z]+\s+[a-z]+$/i', $userData['firstName']) && ! preg_match('/^[a-z]+\s+[a-z]+$/i', $userData['lastName'])) {
+                    if (! preg_match('/^[a-z0-9]+\s+[a-z0-9]+$/i', $userData['firstName']) && ! preg_match('/^[a-z0-9]+\s+[a-z0-9]+$/i', $userData['lastName'])) {
                         if (! is_numeric($userData['firstName']) && ! is_numeric($userData['lastName'])) {
                             $firstName = $userData['firstName'];
                             $lastName = $userData['lastName'];
@@ -103,7 +103,7 @@ if (isset($_POST['action'])) {
             if (! empty($_REQUEST['userData'])) {
                 $userData = $_POST['userData'];
                 if (! empty(trim($userData['firstName'])) && ! empty(trim($userData['lastName'])) && ! empty($userData['role'])) {
-                    if (! preg_match('/^[a-z]+\s+[a-z]+$/i', $userData['firstName']) && ! preg_match('/^[a-z]+\s+[a-z]+$/i', $userData['lastName'])) {
+                    if (! preg_match('/^[a-z0-9]+\s+[a-z0-9]+$/i', $userData['firstName']) && ! preg_match('/^[a-z0-9]+\s+[a-z0-9]+$/i', $userData['lastName'])) {
                         if (! is_numeric($userData['firstName']) && ! is_numeric($userData['lastName'])) {
                             $userId = $userData['userId'];
                             $firstName = $userData['firstName'];
