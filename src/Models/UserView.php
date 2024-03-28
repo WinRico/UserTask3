@@ -28,7 +28,7 @@ class UserView extends User
 
         // Цикл по кожному користувачеві
         foreach ($userObject as $user) {
-            $statusClass = !$user['status'] ? 'offline' : 'online';
+            $statusClass = !$user['status'] ? '' : 'active';
             $role = $user['role'] != 1 ? 'user' : 'admin';
             $output .= '<tr id="userRow_' . $user['id'] . '">';
             $output .= '<td><input type="checkbox" class="selectUser" data-id="' . $user['id'] . '"></td>';

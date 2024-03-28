@@ -143,12 +143,10 @@ body {
 }
 .status-indicator {
     text-align: center;
-}
-.online{
-    color: #86c541;
-}
-.offline {
     color: #5d5d5d;
+}
+.active{
+    color: #86c541;
 }
 
 .btn{

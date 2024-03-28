@@ -1,18 +1,23 @@
-$(document).ready(function (){
+$(document).ready(function() {
 
-    function selectAll(){
+    function selectAll() {
         $('.selectUser').prop('checked', true);
     }
 
+    function updateSelectAll() {
+        var allSelected = $('.selectUser:checked').length === $('.selectUser').length;
+        $('#selectAll').prop('checked', allSelected);
+    }
+
     // Обробник події клікання на кнопку вибору всіх користувачів
-    $(document).on('click', '#selectAll', function(){
+    $(document).on('click', '#selectAll', function() {
         $('.selectUser').prop('checked', $(this).prop('checked'));
     });
 
 
     // Обробник події клікання на окремого користувача для вибору
-    $(document).on('click', '.selectUser', function(){
-        if($('.selectUser:checked').length === $('.selectUser').length) {
+    $(document).on('click', '.selectUser', function() {
+        if ($('.selectUser:checked').length === $('.selectUser').length) {
             $('#selectAll').prop('checked', true);
         } else {
             $('#selectAll').prop('checked', false);
@@ -30,12 +35,12 @@ $(document).ready(function (){
 
 
     // Функція додавання рядка в таблицю
-    function addNewCollumn(userData,id){
-        statusClass = !userData.status  ? 'offline' : 'online';
+    function addNewCollumn(userData, id) {
+        statusClass = !userData.status ? 'offline' : 'online';
         const newRow = $('<tr id="userRow_' + id + '">' +
-            '<td><input type="checkbox" class="selectUser" data-id="' + id +'"></td>' +
-            '<td><a id="firstName_' + id + '">' + userData.firstName + '</a>' + ' ' + '<a id="lastName_' + id + '">' + userData.lastName + '</a></td>'+
-            '<td id="status_' + id + '" class="status-indicator ' + statusClass + '"><i class="fa fa-circle"></i></td>'  +
+            '<td><input type="checkbox" class="selectUser" data-id="' + id + '"></td>' +
+            '<td><a id="firstName_' + id + '">' + userData.firstName + '</a>' + ' ' + '<a id="lastName_' + id + '">' + userData.lastName + '</a></td>' +
+            '<td id="status_' + id + '" class="status-indicator ' + statusClass + '"><i class="fa fa-circle"></i></td>' +
             '<td id="role_' + id + '">' + userData.role + '</td>' +
             '<td>' + '<div class="btn-group">' + '<button type="button" data-button-id="2" class="btn btn-sm btn-outline-secondary editBtn" data-id="' + id + '">' +
             '<i class="fa fa-pencil"></i></button>' +
@@ -48,10 +53,10 @@ $(document).ready(function (){
 
 
     // Функція редагування рядка в таблиці
-    function editCollumn(userData){
+    function editCollumn(userData) {
         const table = $('#userTable');
         const row = table.find('#userRow_' + userData.userId);
-        statusClass = !userData.status  ? 'setNotActive' : 'setActive';
+        statusClass = !userData.status ? 'setNotActive' : 'setActive';
         updateStatus(userData.userId, statusClass);
         row.find('#firstName_' + userData.userId).text(userData.firstName);
         row.find('#lastName_' + userData.userId).text(userData.lastName);
@@ -63,9 +68,9 @@ $(document).ready(function (){
 
         const statusElement = $('#status_' + userId); // Знаходимо елемент статусу за його ID
         if (status === "setActive") {
-            statusElement.removeClass('offline').addClass('online');
+            statusElement.addClass('active');
         } else {
-            statusElement.removeClass('online').addClass('offline');
+            statusElement.removeClass('active');
         }
     }
 
@@ -78,33 +83,32 @@ $(document).ready(function (){
             let role = $('#role_' + userId).text();
             let statusElement = $('#status_' + userId);
             let status = !!statusElement.hasClass('online');
-           let userData = {
-               userId : userId,
-               firstName : firstName,
-               lastName : lastName,
-               role : role,
-               status : status,
-           };
-           if (userData){
-               resolve(userData);
-           }else {
-               console.error('Missing user');
-           }
+            let userData = {
+                userId: userId,
+                firstName: firstName,
+                lastName: lastName,
+                role: role,
+                status: status,
+            };
+            if (userData) {
+                resolve(userData);
+            } else {
+                console.error('Missing user');
+            }
         });
     }
 
 
     // Функція для отримання в форму данних
-    function UserFormField(dataForm,buttonId) {
+    function UserFormField(dataForm, buttonId) {
         clearFormFields();
 
         // Заповнення отриманими даними полів форми редагування користувача
         $('#firstName').val(dataForm['firstName'] || '');
         $('#lastName').val(dataForm['lastName'] || '');
-        if (!dataForm['status'] ){
+        if (!dataForm['status']) {
             $('#status').prop('checked', false);
-        }
-        else {
+        } else {
             $('#status').prop('checked', true);
         }
         $('#role').val(dataForm['role'] || '');
@@ -128,9 +132,9 @@ $(document).ready(function (){
             success: function(response) {
                 if (response.status) {
                     $('#userModal').modal('hide'); // При успішному додаванні користувача ховаємо модальне вікно
-                    addNewCollumn(userData,response.user.id);
+                    addNewCollumn(userData, response.user.id);
                     if ($('#selectAll').prop('checked')) {
-                       selectAll();
+                        selectAll();
                     }
                     console.log(response);
                 } else {
@@ -146,7 +150,7 @@ $(document).ready(function (){
 
 
     // Функція для редагування користувача
-    function editUser(userData){
+    function editUser(userData) {
         // Відправка AJAX-запиту на сервер для отримання даних про користувача за його ID
         $.ajax({
             url: 'src/Controllers/MainController.php',
@@ -161,10 +165,11 @@ $(document).ready(function (){
                     $('#userModal').modal('hide');
                     editCollumn(userData)
                     console.log(response);
-                }else {
-                        console.error(response);
-                        $('#error-message').text(response.error.message).show(); // Показуємо повідомлення про помилку
-                }},
+                } else {
+                    console.error(response);
+                    $('#error-message').text(response.error.message).show(); // Показуємо повідомлення про помилку
+                }
+            },
             error: function(xhr, status, error) {
                 console.error(error);
             }
@@ -190,10 +195,11 @@ $(document).ready(function (){
                         userIds.forEach(function(id) {
                             $('#userRow_' + id).remove();
                         });
-                        console.log(response);
+                        updateSelectAll();
+                            console.log(response);
                     } else {
-                            console.error(response);
-                        }
+                        console.error(response);
+                    }
                 },
                 error: function(xhr, status, error) {
                     console.error(error);
@@ -212,10 +218,11 @@ $(document).ready(function (){
                 success: function(response) {
                     if (response.status) {
                         $('#userRow_' + userIds).remove();
+                        updateSelectAll();
                         console.log(response);
-                    }else {
-                            console.error(response);
-                        }
+                    } else {
+                        console.error(response);
+                    }
                 },
                 error: function(xhr, status, error) {
                     console.error(error);
@@ -236,15 +243,16 @@ $(document).ready(function (){
                 userIds: selectedUsers,
                 actionSelected: action,
             },
-            success: function (response) {
+            success: function(response) {
                 if (response.status) {
                     selectedUsers.forEach(function(userId) {
-                        updateStatus(userId,action);
+                        updateStatus(userId, action);
                     });
                     console.log(response);
                 } else {
-                        console.error(response);
-                }},
+                    console.error(response);
+                }
+            },
             error: function(xhr, status, error) {
                 console.error(error);
             }
@@ -273,14 +281,14 @@ $(document).ready(function (){
 
 
     // Обробник події клікання на кнопку додавання користувача (два випадки)
-    $('#buttonAdd1, #buttonAdd2').click(function(){
+    $('#buttonAdd1, #buttonAdd2').click(function() {
         let buttonId = 1;
         const userModal = document.getElementById('userModal');
         const modalTitle = userModal.querySelector('.modal-title');
         modalTitle.textContent = 'Add';
         clearFormFields();
         $('#error-message').hide();
-        $(userModal).data('button-id', buttonId).data('id', null).modal('show');
+        $('#userModal').data('button-id', buttonId).data('id', null).modal('show');
     });
 
 
@@ -288,7 +296,7 @@ $(document).ready(function (){
     $(document).on('click', '.editBtn', function() {
 
         let buttonId = 2;
-        let userId =  $(this).data('id');
+        let userId = $(this).data('id');
 
         getUserData(userId)
             .then(userData => {
@@ -296,7 +304,7 @@ $(document).ready(function (){
                 const modalTitle = userModal.querySelector('.modal-title');
                 modalTitle.textContent = 'Update';
                 $('#error-message').hide();
-                UserFormField(userData,buttonId);
+                UserFormField(userData, buttonId);
             })
 
     });
@@ -308,14 +316,14 @@ $(document).ready(function (){
         const userId = $(this).data('id');
         getUserData(userId)
             .then(userData => {
-                confirmAction('delete',userData);
+                confirmAction('delete', userData);
             })
     });
 
 
 
     // Обробник події відправки форми для додавання/редагування користувача
-    $(document).on('submit', '#userModal', function(event){
+    $(document).on('submit', '#userModal', function(event) {
         event.preventDefault();
         let firstName = $('#firstName').val();
         let lastName = $('#lastName').val();
@@ -329,9 +337,9 @@ $(document).ready(function (){
             status: status,
             role: role
         };
-        if (buttonId === 1){
+        if (buttonId === 1) {
             addUser(requestData);
-        }else {
+        } else {
             requestData.userId = userId;
             editUser(requestData)
         }
@@ -339,71 +347,86 @@ $(document).ready(function (){
 
 
     // Обробник події клікання на кнопку збереження вибраних дій з користувачами
-    $('.buttonOk').click(function(){
-
+    $('#buttonOk1, #buttonOk2').click(function() {
         let actionSelect = $(this).data('select');
         let action = $(actionSelect).val();
+
+        if (action === '') {
+            // Викликати функцію для обробки помилки обраної дії
+            handleEmptyActionError();
+            return false;
+        }
+
+        if ($('.selectUser:checked').length === 0) {
+            // Викликати функцію для обробки помилки відсутності вибраних користувачів
+            handleNoSelectedUsersError();
+            return false;
+        }
+
         let selectedUsers = [];
-
-        //Поля форми повідомлень помилок
-        const massageModal = document.getElementById('massageModel');
-        const modalBody = massageModal.querySelector('.modal-body');
-
-        // Перевірка, чи обрано дію
-        if(action === '') {
-            modalBody.textContent = 'Please select an action.';
-            $('#massageModel').modal('show');
-            $('#confirmMassageBtn').click(function () {
-                $('#massageModel').modal('hide');
-            });
-            return false;
-        }
-
-        // Перевірка, чи обрано хоча б одного користувача
-        if($('.selectUser:checked').length === 0) {
-            modalBody.textContent = 'Please select at least one user.';
-            $('#massageModel').modal('show');
-            $('#confirmMassageBtn').click(function () {
-                $('#massageModel').modal('hide');
-            });
-            return false;
-        }
-
-        // Збір ID обраних користувачів
         $('.selectUser:checked').each(function() {
             let userId = $(this).data('id');
             selectedUsers.push(userId);
         });
 
-        // Виклик функції для виконання дії
-        if(action === 'delete'){
+        // Виклик функції для виконання дії в залежності від вибраної дії
+        executeAction(selectedUsers, action);
+    });
+
+    function handleEmptyActionError() {
+        // Обробка помилки обраної дії
+        const massageModal = document.getElementById('massageModel');
+        const modalBody = massageModal.querySelector('.modal-body');
+        modalBody.textContent = 'Please select an action.';
+        $('#massageModel').modal('show');
+        $('#confirmMassageBtn').click(function() {
+            $('#massageModel').modal('hide');
+        });
+    }
+
+    function handleNoSelectedUsersError() {
+        // Обробка помилки відсутності вибраних користувачів
+        const massageModal = document.getElementById('massageModel');
+        const modalBody = massageModal.querySelector('.modal-body');
+        modalBody.textContent = 'Please select at least one user.';
+        $('#massageModel').modal('show');
+        $('#confirmMassageBtn').click(function() {
+            $('#massageModel').modal('hide');
+        });
+    }
+
+    function executeAction(selectedUsers, action) {
+        // Виконання вибраної дії
+        if (action === 'delete') {
             if (selectedUsers.length !== 1) {
-                const confirmModal = document.getElementById('confirmModal');
-                const modalTitle = confirmModal.querySelector('.modal-title');
-                const modalBody = confirmModal.querySelector('.modal-body');
-                const modalAction = confirmModal.querySelector('.btn-danger');
-                modalTitle.textContent = 'Delete Confirmation';
-                modalBody.textContent = 'Are you sure you want to delete this users?';
-                modalAction.textContent = 'Delete';
-                $('#confirmModal').modal('show');
-                $('#confirmBtn').off('click').on('click', function () {
-                    deleteUser(selectedUsers); // Викликаємо функцію для видалення користувача
-                    $('#confirmModal').modal('hide'); // Ховаємо модальне вікно підтвердження
-                });
-            }else {
+                showDeleteConfirmationModal(selectedUsers);
+            } else {
                 getUserData(selectedUsers[0])
-                    .then(userData =>{
-                        confirmAction('delete',userData);
+                    .then(userData => {
+                        confirmAction('delete', userData);
                     })
-                    .catch(error =>{
+                    .catch(error => {
                         console.log(error);
                     })
             }
-
-        }else {
+        } else {
             doAction(selectedUsers, action);
         }
+    }
 
-    });
+    function showDeleteConfirmationModal(selectedUsers) {
+        // Показ модального вікна підтвердження видалення
+        const confirmModal = document.getElementById('confirmModal');
+        const modalTitle = confirmModal.querySelector('.modal-title');
+        const modalBody = confirmModal.querySelector('.modal-body');
+        const modalAction = confirmModal.querySelector('.btn-danger');
+        modalTitle.textContent = 'Delete Confirmation';
+        modalBody.textContent = 'Are you sure you want to delete these users?';
+        modalAction.textContent = 'Delete';
+        $('#confirmModal').modal('show');
+        $('#confirmBtn').off('click').on('click', function() {
+            deleteUser(selectedUsers); // Викликаємо функцію для видалення користувачів
+            $('#confirmModal').modal('hide'); // Ховаємо модальне вікно підтвердження
+        });
+    }
 })
-

@@ -35,7 +35,7 @@ $userModel = new UserView();
                         <option value="delete">Delete</option>
                     </select>
                 </form>
-                <button type="button" class="btn btn-primary buttonOk" data-select="#actionSelect1">Ok</button>
+                <button type="button" id="buttonOk1" class="btn btn-primary buttonOk" data-select="#actionSelect1">Ok</button>
             </div>
         </main>
     </div>
@@ -56,7 +56,7 @@ $userModel = new UserView();
                         <option value="delete">Delete</option>
                     </select>
                 </form>
-                <button type="button" class="btn btn-primary buttonOk" data-select="#actionSelect2">Ok</button>
+                <button type="button" id="buttonOk2" class="btn btn-primary buttonOk" data-select="#actionSelect2">Ok</button>
             </div>
         </main>
     </div>
