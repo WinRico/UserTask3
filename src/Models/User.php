@@ -48,6 +48,7 @@ class User {
      * @return string JSON-рядок з результатом операції.
      */
     public function addUser($firstName, $lastName, $status, $role) {
+        $status = !$status ? 0 : 1;
         // SQL запит на додавання користувача
         $query = "INSERT INTO users (firstname, lastname, status, role) VALUES (?, ?, ?, ?)";
         // Виконання запиту
@@ -60,7 +61,7 @@ class User {
         return json_encode(['status' => true, 'error' => null, 'id' => $userId]);
     }
     function updateUser($id, $firstname, $lastname, $status, $role){
-        $status =  $status ? 1 : 0;
+        $status =  !$status ? 0 : 1;
         $updatedUser = $this->updateUserById($id, $firstname, $lastname, $status, $role);
         if (!$updatedUser) {
             return json_encode(['status' => false, 'error' => ['code' => 100, 'message' => 'not found user']]);
@@ -79,7 +80,6 @@ class User {
      * @return bool Результат операції (чи вдалося оновити дані користувача).
      */
     function updateUserById($id, $firstname, $lastname, $status, $role){
-
         $query = "UPDATE users SET firstname = ?, lastname = ?, status = ?, role = ? WHERE id = ?";
         $stmt = $this->db->prepare($query);
 

@@ -22,6 +22,22 @@ body {
     vertical-align: text-bottom;
 }
 
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+td:nth-child(2) {
+    width: 40%;
+    white-space: nowrap;
+}
+
 /*
  * Utilities
  */

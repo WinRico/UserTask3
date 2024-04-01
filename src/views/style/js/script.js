@@ -1,5 +1,6 @@
 $(document).ready(function() {
 
+
     function selectAll() {
         $('.selectUser').prop('checked', true);
     }
@@ -9,13 +10,13 @@ $(document).ready(function() {
         $('#selectAll').prop('checked', allSelected);
     }
 
-    // Обробник події клікання на кнопку вибору всіх користувачів
+    // Обробник поді�� клікання на кнопку вибору всіх користувачів
     $(document).on('click', '#selectAll', function() {
         $('.selectUser').prop('checked', $(this).prop('checked'));
     });
 
 
-    // Обробник події клікання на окремого користувача для вибору
+    // Обробник поді�� клікання на окремого користувача для вибору
     $(document).on('click', '.selectUser', function() {
         if ($('.selectUser:checked').length === $('.selectUser').length) {
             $('#selectAll').prop('checked', true);
@@ -25,7 +26,7 @@ $(document).ready(function() {
     });
 
 
-    // Функція для очищення полів форми
+    // ��ункція для очищення полів форми
     function clearFormFields() {
         $('#firstName').val('');
         $('#lastName').val('');
@@ -34,9 +35,9 @@ $(document).ready(function() {
     }
 
 
-    // Функція додавання рядка в таблицю
+    // ��ункція додавання рядка в таблицю
     function addNewCollumn(userData, id) {
-        statusClass = !userData.status ? 'offline' : 'online';
+        let statusClass = !userData.status ? '' : 'active';
         const newRow = $('<tr id="userRow_' + id + '">' +
             '<td><input type="checkbox" class="selectUser" data-id="' + id + '"></td>' +
             '<td><a id="firstName_' + id + '">' + userData.firstName + '</a>' + ' ' + '<a id="lastName_' + id + '">' + userData.lastName + '</a></td>' +
@@ -52,21 +53,21 @@ $(document).ready(function() {
     }
 
 
-    // Функція редагування рядка в таблиці
+    // ��ункція редагування рядка в таблиці
     function editCollumn(userData) {
         const table = $('#userTable');
         const row = table.find('#userRow_' + userData.userId);
-        statusClass = !userData.status ? 'setNotActive' : 'setActive';
+        let statusClass =!userData.status? 'setNotActive' : 'setActive';
         updateStatus(userData.userId, statusClass);
         row.find('#firstName_' + userData.userId).text(userData.firstName);
         row.find('#lastName_' + userData.userId).text(userData.lastName);
         row.find('#role_' + userData.userId).text(userData.role);
     }
 
-    // Функція для оновлення статусу користувача в таблиці
+    // ��ункція для оновлення статусу користувача в таблиці
     function updateStatus(userId, status) {
 
-        const statusElement = $('#status_' + userId); // Знаходимо елемент статусу за його ID
+        const statusElement = $('#status_' + userId); // Знаходимо елемент статусу за ��ого ID
         if (status === "setActive") {
             statusElement.addClass('active');
         } else {
@@ -77,12 +78,12 @@ $(document).ready(function() {
 
     // функція отримання даних користувача за id;
     function getUserData(userId) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             let firstName = $('#firstName_' + userId).text();
             let lastName = $('#lastName_' + userId).text();
             let role = $('#role_' + userId).text();
             let statusElement = $('#status_' + userId);
-            let status = !!statusElement.hasClass('online');
+            let status = !!statusElement.hasClass('active');
             let userData = {
                 userId: userId,
                 firstName: firstName,
@@ -177,9 +178,9 @@ $(document).ready(function() {
     }
 
     // Функція для видалення користувача чи кількох користувачів
-    function deleteUser(userIds) {
+    function deleteUser(userId) {
         // Перевірка, чи є переданий параметр масивом
-        if (Array.isArray(userIds)) {
+        if (Array.isArray(userId)) {
             // AJAX-запит для видалення кількох користувачів одночасно
             $.ajax({
                 url: 'src/Controllers/MainController.php',
@@ -187,12 +188,12 @@ $(document).ready(function() {
                 dataType: 'json',
                 data: {
                     action: 'deleteUser',
-                    userId: userIds // Передача масиву userIds
+                    userId: userId // Передача масиву userIds
                 },
                 success: function(response) {
                     if (response.status) {
                         // Видалення кожного користувача з таблиці
-                        userIds.forEach(function(id) {
+                        userId.forEach(function(id) {
                             $('#userRow_' + id).remove();
                         });
                         updateSelectAll();
@@ -213,11 +214,11 @@ $(document).ready(function() {
                 dataType: 'json',
                 data: {
                     action: 'deleteUser',
-                    userId: userIds // Передача одного userId
+                    userId: userId // Передача одного userId
                 },
                 success: function(response) {
                     if (response.status) {
-                        $('#userRow_' + userIds).remove();
+                        $('#userRow_' + userId).remove();
                         updateSelectAll();
                         console.log(response);
                     } else {
@@ -241,7 +242,7 @@ $(document).ready(function() {
             data: {
                 action: 'updateStatusSelectedUsers',
                 userIds: selectedUsers,
-                actionSelected: action,
+                actionSelected: action
             },
             success: function(response) {
                 if (response.status) {
@@ -362,7 +363,6 @@ $(document).ready(function() {
             handleNoSelectedUsersError();
             return false;
         }
-
         let selectedUsers = [];
         $('.selectUser:checked').each(function() {
             let userId = $(this).data('id');
