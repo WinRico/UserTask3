@@ -154,7 +154,12 @@ if (isset($_POST['action'])) {
                 $userModel = new User();
 
                 foreach ($userIds as $id) {
-                    $result = $userModel->updateStatusUsersById($id, $actionSelected);
+                    if (! $userModel->getUsersById($id)) {
+                        echo json_encode(['status' => false, 'error' => ['code' => 101, 'message' => 'Cannot find this user']]);
+                        return;
+                    } else {
+                        $result = $userModel->updateStatusUsersById($id, $actionSelected);
+                    }
                 }
                 if ($result) {
                     echo json_encode(['status' => true, 'error' => null]);
