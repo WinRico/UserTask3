@@ -24,10 +24,10 @@ if (isset($_POST['action'])) {
                 if (! empty(trim($userData['firstName'])) && ! empty(trim($userData['lastName'])) && ! empty($userData['role'])) {
                     if (! preg_match('/^[a-z0-9]+\s+[a-z0-9]+$/i', $userData['firstName']) && ! preg_match('/^[a-z0-9]+\s+[a-z0-9]+$/i', $userData['lastName'])) {
                         if (! is_numeric($userData['firstName']) && ! is_numeric($userData['lastName'])) {
-                            $firstName = $userData['firstName'];
-                            $lastName = $userData['lastName'];
-                            $status = filter_var($_POST['userData']['status'], FILTER_VALIDATE_BOOLEAN);
-                            $role = $userData['role'];
+                            $firstName = htmlspecialchars($userData['firstName']);
+                            $lastName = htmlspecialchars($userData['lastName']);
+                            $status = filter_var(htmlspecialchars($_POST['userData']['status']), FILTER_VALIDATE_BOOLEAN);
+                            $role = htmlspecialchars($userData['role']);
                             // Конвертація ролі
                             $role = ($role == 'admin') ? 1 : 0;
 
@@ -105,11 +105,11 @@ if (isset($_POST['action'])) {
                 if (! empty(trim($userData['firstName'])) && ! empty(trim($userData['lastName'])) && ! empty($userData['role'])) {
                     if (! preg_match('/^[a-z0-9]+\s+[a-z0-9]+$/i', $userData['firstName']) && ! preg_match('/^[a-z0-9]+\s+[a-z0-9]+$/i', $userData['lastName'])) {
                         if (! is_numeric($userData['firstName']) && ! is_numeric($userData['lastName'])) {
-                            $userId = $userData['userId'];
-                            $firstName = $userData['firstName'];
-                            $lastName = $userData['lastName'];
-                            $status = filter_var($_POST['userData']['status'], FILTER_VALIDATE_BOOLEAN);
-                            $role = $userData['role'];
+                            $userId = htmlspecialchars($userData['userId']);
+                            $firstName = htmlspecialchars($userData['firstName']);
+                            $lastName = htmlspecialchars($userData['lastName']);
+                            $status = filter_var(htmlspecialchars($_POST['userData']['status']), FILTER_VALIDATE_BOOLEAN);
+                            $role = htmlspecialchars($userData['role']);
                             // Конвертація ролі
                             $role = ($role == 'admin') ? 1 : 0;
 

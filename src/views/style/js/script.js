@@ -36,16 +36,17 @@ $(document).ready(function() {
 
 
     // ��ункція додавання рядка в таблицю
-    function addNewCollumn(userData, id) {
+    function addNewCollumn(userData) {
         let statusClass = !userData.status ? '' : 'active';
-        const newRow = $('<tr id="userRow_' + id + '">' +
-            '<td><input type="checkbox" class="selectUser" data-id="' + id + '"></td>' +
-            '<td><a id="firstName_' + id + '">' + userData.firstName + '</a>' + ' ' + '<a id="lastName_' + id + '">' + userData.lastName + '</a></td>' +
-            '<td id="status_' + id + '" class="status-indicator ' + statusClass + '"><i class="fa fa-circle"></i></td>' +
-            '<td id="role_' + id + '">' + userData.role + '</td>' +
-            '<td>' + '<div class="btn-group">' + '<button type="button" data-button-id="2" class="btn btn-sm btn-outline-secondary editBtn" data-id="' + id + '">' +
+        let role = !userData.role ? 'user' : 'admin';
+        const newRow = $('<tr id="userRow_' + userData.id + '">' +
+            '<td><input type="checkbox" class="selectUser" data-id="' + userData.id + '"></td>' +
+            '<td><a id="firstName_' + userData.id + '">' + userData.firstName + '</a>' + ' ' + '<a id="lastName_' + userData.id + '">' + userData.lastName + '</a></td>' +
+            '<td id="status_' + userData.id + '" class="status-indicator ' + statusClass + '"><i class="fa fa-circle"></i></td>' +
+            '<td id="role_' + userData.id + '">' + role + '</td>' +
+            '<td>' + '<div class="btn-group">' + '<button type="button" data-button-id="2" class="btn btn-sm btn-outline-secondary editBtn" data-id="' + userData.id + '">' +
             '<i class="fa fa-pencil"></i></button>' +
-            '<button type="button" class="btn btn-sm btn-outline-secondary deleteBtn" data-id="' + id + '"><i class="fa fa-trash"></i></i></button>' +
+            '<button type="button" class="btn btn-sm btn-outline-secondary deleteBtn" data-id="' + userData.id + '"><i class="fa fa-trash"></i></i></button>' +
             '</div>' +
             '</td>' +
             '</tr>');
@@ -55,13 +56,14 @@ $(document).ready(function() {
 
     // ��ункція редагування рядка в таблиці
     function editCollumn(userData) {
+        let role = !userData.role ? 'user' : 'admin';
         const table = $('#userTable');
-        const row = table.find('#userRow_' + userData.userId);
+        const row = table.find('#userRow_' + userData.id);
         let statusClass =!userData.status? 'setNotActive' : 'setActive';
-        updateStatus(userData.userId, statusClass);
-        row.find('#firstName_' + userData.userId).text(userData.firstName);
-        row.find('#lastName_' + userData.userId).text(userData.lastName);
-        row.find('#role_' + userData.userId).text(userData.role);
+        updateStatus(userData.id, statusClass);
+        row.find('#firstName_' + userData.id).text(userData.firstName);
+        row.find('#lastName_' + userData.id).text(userData.lastName);
+        row.find('#role_' + userData.id).text(role);
     }
 
     // ��ункція для оновлення статусу користувача в таблиці
@@ -133,7 +135,7 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.status) {
                     $('#userModal').modal('hide'); // При успішному додаванні користувача ховаємо модальне вікно
-                    addNewCollumn(userData, response.user.id);
+                    addNewCollumn(response.user);
                     if ($('#selectAll').prop('checked')) {
                         selectAll();
                     }
@@ -164,7 +166,7 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.status) {
                     $('#userModal').modal('hide');
-                    editCollumn(userData)
+                    editCollumn(response.user)
                     console.log(response);
                 } else {
                     console.error(response);
