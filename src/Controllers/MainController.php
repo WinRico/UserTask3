@@ -22,7 +22,7 @@ if (isset($_POST['action'])) {
             if (! empty($_REQUEST['userData'])) {
                 $userData = $_POST['userData'];
                 if (! empty(trim($userData['firstName'])) && ! empty(trim($userData['lastName'])) && ! empty($userData['role'])) {
-                    if (! preg_match('/^[a-z0-9]+\s+[a-z0-9]+$/i', $userData['firstName']) && ! preg_match('/^[a-z0-9]+\s+[a-z0-9]+$/i', $userData['lastName'])) {
+                    if (! preg_match('/^\w+\s+\w+$/i', $userData['firstName']) && ! preg_match('/^\w+\s+\w+$/i', $userData['lastName'])) {
                         if (! is_numeric($userData['firstName']) && ! is_numeric($userData['lastName'])) {
                             $firstName = htmlspecialchars($userData['firstName']);
                             $lastName = htmlspecialchars($userData['lastName']);
@@ -74,16 +74,16 @@ if (isset($_POST['action'])) {
                 if (! is_string($userIds)) {
                     foreach ($userIds as $id) {
                         if (! $userModel->getUsersById($id)) {
-                            echo json_encode(['status' => false, 'error' => ['code' => 101, 'message' => 'Cannot find this user']]);
+                            echo json_encode(['status' => false, 'error' => ['code' => 101, 'message' => 'Cannot find this user', 'userId' => $id]]);
                             return;
                         }
-                        else {
-                            $result = $userModel->deleteUser($id);
-                        }
+                    }
+                    foreach ($userIds as $id) {
+                        $result = $userModel->deleteUser($id);
                     }
                 } else {
                     if (! $userModel->getUsersById($userIds)) {
-                        echo json_encode(['status' => false, 'error' => ['code' => 101, 'message' => 'Cannot find this user']]);
+                        echo json_encode(['status' => false, 'error' => ['code' => 101, 'message' => 'Cannot find this user', 'userId' => $userIds]]);
                         return;
                     }
                     $result = $userModel->deleteUser($userIds);
@@ -94,7 +94,6 @@ if (isset($_POST['action'])) {
                     echo json_encode(['status' => false, 'error' => ['code' => 100, 'message' => 'Failed to delete user']]);
                 }
             } else {
-                print_r($_POST['userId']);
                 echo json_encode(['status' => false, 'error' => ['code' => 100, 'message' => 'Missing id']]);
             }
             break;
@@ -103,7 +102,7 @@ if (isset($_POST['action'])) {
             if (! empty($_REQUEST['userData'])) {
                 $userData = $_POST['userData'];
                 if (! empty(trim($userData['firstName'])) && ! empty(trim($userData['lastName'])) && ! empty($userData['role'])) {
-                    if (! preg_match('/^[a-z0-9]+\s+[a-z0-9]+$/i', $userData['firstName']) && ! preg_match('/^[a-z0-9]+\s+[a-z0-9]+$/i', $userData['lastName'])) {
+                    if (! preg_match('/^\w+\s+\w+$/i', $userData['firstName']) && ! preg_match('/^\w+\s+\w+$/i', $userData['lastName'])) {
                         if (! is_numeric($userData['firstName']) && ! is_numeric($userData['lastName'])) {
                             $userId = htmlspecialchars($userData['userId']);
                             $firstName = htmlspecialchars($userData['firstName']);
@@ -122,7 +121,7 @@ if (isset($_POST['action'])) {
                             ];
                             $userModel = new User();
                             if (! $userModel->getUsersById($userId)) {
-                                echo json_encode(['status' => false, 'error' => ['code' => 101, 'message' => 'Cannot find this user']]);
+                                echo json_encode(['status' => false, 'error' => ['code' => 101, 'message' => 'Cannot find this user', 'userId' => $userId]]);
                             } else {
                                 $result = $userModel->updateUser($userId, $firstName, $lastName, $status, $role);
                                 if ($result) {
@@ -157,9 +156,10 @@ if (isset($_POST['action'])) {
                     if (! $userModel->getUsersById($id)) {
                         echo json_encode(['status' => false, 'error' => ['code' => 101, 'message' => 'Cannot find this user']]);
                         return;
-                    } else {
-                        $result = $userModel->updateStatusUsersById($id, $actionSelected);
                     }
+                }
+                foreach ($userIds as $id) {
+                        $result = $userModel->updateStatusUsersById($id, $actionSelected);
                 }
                 if ($result) {
                     echo json_encode(['status' => true, 'error' => null]);

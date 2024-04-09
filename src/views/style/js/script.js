@@ -143,6 +143,9 @@ $(document).ready(function() {
                 } else {
                     console.error(response);
                     $('#error-message').text(response.error.message).show(); // Показуємо повідомлення про помилку
+                   if(response.error.code === 101){
+                        handleNoUserData(response.error.userId);
+                    }
                 }
             },
             error: function(xhr, status, error) {
@@ -171,6 +174,8 @@ $(document).ready(function() {
                 } else {
                     console.error(response);
                     $('#error-message').text(response.error.message).show(); // Показуємо повідомлення про помилку
+                   if(response.error.code === 101){
+                    }
                 }
             },
             error: function(xhr, status, error) {
@@ -202,6 +207,9 @@ $(document).ready(function() {
                             console.log(response);
                     } else {
                         console.error(response);
+                       if(response.error.code === 101){
+                            handleNoUserData(response.error.userId);
+                        }
                     }
                 },
                 error: function(xhr, status, error) {
@@ -225,6 +233,9 @@ $(document).ready(function() {
                         console.log(response);
                     } else {
                         console.error(response);
+                       if(response.error.code === 101){
+                            handleNoUserData(response.error.userId);
+                        }
                     }
                 },
                 error: function(xhr, status, error) {
@@ -254,6 +265,9 @@ $(document).ready(function() {
                     console.log(response);
                 } else {
                     console.error(response);
+                    if(response.error.code === 101){
+                       handleNoUserData(response.error.userId);
+                    }
                 }
             },
             error: function(xhr, status, error) {
@@ -395,6 +409,31 @@ $(document).ready(function() {
         $('#confirmMassageBtn').click(function() {
             $('#massageModel').modal('hide');
         });
+    }
+    function determineType(data) {
+        return typeof data;
+    }
+    function handleNoUserData(userId) {
+        // Обробка помилки відсутності вибраних користувачів
+        const massageModal = document.getElementById('massageModel');
+        const modalBody = massageModal.querySelector('.modal-body');
+        if (typeof userId === 'string') {
+            getUserData(userId)
+                .then(userData => {
+                    modalBody.textContent = "Not found " + userData.firstName + ' ' + userData.lastName + " user";
+                    $('#massageModel').modal('show');
+                    $('#confirmMassageBtn').click(function () {
+                        $('#massageModel').modal('hide');
+                    })
+                });
+        }
+        else {
+            modalBody.textContent = "Not found some users";
+            $('#massageModel').modal('show');
+            $('#confirmMassageBtn').click(function () {
+                $('#massageModel').modal('hide');
+            })
+        }
     }
 
     function executeAction(selectedUsers, action) {
